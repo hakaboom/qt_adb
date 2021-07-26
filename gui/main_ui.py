@@ -26,7 +26,7 @@ class MainUI(QtWidgets.QMainWindow):
         self.setWindowTitle("test")  # 设置窗口名
 
         # ----------------------设备栏----------------------
-        self.devices_list = None
+        self.devices_list = None  # type: foldWidget
         self.devices_list_widget = QWidget()
         self.devices_list_widget.setObjectName('devices_list_widget')
         self.devices_list_layout = QVBoxLayout()
@@ -47,14 +47,16 @@ class MainUI(QtWidgets.QMainWindow):
         self.main_layout.addWidget(self.devices_tools_widget)
         self.devices_tools_widget.setLayout(self.devices_tools_layout)
         # ----------------------设备信息栏----------------------
-        self.devices_info_widget = None
+        self.devices_info_widget = None  # type: deviceGrid
         self.init_devices_info()
-        self.devices_tools_layout.addWidget(self.devices_info_widget)
         self.devices_tools_layout.addStretch(0)  # 添加伸缩
         # ----------------------主界面----------------------
         self.main_layout.setStretch(0, 1)
         self.main_layout.setStretch(1, 100)  # 更改main大小会有影响
         self.main_layout.setSpacing(0)
+
+        # 设置回调函数
+        self.device_btn_hook()
 
     def init_devices_list(self):
         self.devices_list = foldWidget()
@@ -63,12 +65,23 @@ class MainUI(QtWidgets.QMainWindow):
             for device, state in devices.items():
                 item = QListWidgetItem(self.devices_list)
                 button = CustomButton(item, text=device, objectName='device_btn')
+                button.device = ADBDevice(device_id=device)
                 self.devices_list.add_button(item, button)
+
+    def device_btn_hook(self):
+        for btn in self.devices_list.get_button_list():
+            def hook():
+                adb = btn.device  # type: ADBDevice
+                def fun():
+                    print(adb.displayInfo)
+                return fun
+            btn.set_onClick_fun(hook())
 
     def init_devices_info(self):
         """ 配置设置信息 """
         from src.device_grid import deviceGrid
         self.devices_info_widget = deviceGrid()
+        self.devices_tools_layout.addWidget(self.devices_info_widget)
 
 
 
