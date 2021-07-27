@@ -7,3 +7,6 @@ app = QApplication(sys.argv)
 myWin = MainUI()
 myWin.show()
 sys.exit(app.exec_())
+
+# QTextBrowser, append(text)
+
