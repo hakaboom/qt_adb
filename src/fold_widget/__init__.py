@@ -9,8 +9,8 @@ from typing import List
 class foldWidget(QListWidget):
     def __init__(self, parent=None):
         super(foldWidget, self).__init__(parent)
-        self.setMinimumWidth(120)
-        self.setMaximumWidth(120)
+        self.setMinimumWidth(150)
+        self.setMaximumWidth(150)
 
         self.button_list = []
 

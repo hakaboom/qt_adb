@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt, QSize
 from src.button import CustomButton
 
 
 class TitleLabel(QWidget):
-    def __init__(self, title: str, text: str = 'None', parent=None):
+    def __init__(self, title: str, text: str = None, parent=None):
         """
         初始化
 
@@ -19,15 +20,22 @@ class TitleLabel(QWidget):
         self.title = QLabel(title, self)
         self.text = QLabel(text, self)
 
-        self.mainLayout = QGridLayout(self)
-        self.mainLayout.addWidget(self.title, 0, 0)
-        self.mainLayout.addWidget(self.text, 0, 1, 1, 2)
+        self.mainLayout = QHBoxLayout(self)
+        self.mainLayout.addWidget(self.title)
+        self.mainLayout.addWidget(self.text)
 
     def setText(self, text: str):
         self.text.setText(text)
+        return self
 
     def setTitle(self, text: str):
         self.title.setText(text)
+        return self
+
+    def set_title_size(self, size: QSize):
+        self.title.setMaximumSize(size)
+        self.title.setMinimumSize(size)
+        return size
 
 
 class DropQLine(QLineEdit):
