@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from adbutils import ADBDevice
 
 
-from src.device_grid import deviceGrid, deviceInfoWidget
-from src.device_grid.custom_label import FileChoseLineEdit
+from src.device_group import deviceInfoWidget, deviceToolWidget
 from src.button import CustomButton
 from src.fold_widget import foldWidget
-import sys
-import json
-import os
-from loguru import logger
 
 
 class MainUI(QtWidgets.QMainWindow):
@@ -34,17 +29,33 @@ class MainUI(QtWidgets.QMainWindow):
         self.init_devices_list()  # 初始化device_list
         self.main_layout.addWidget(self.devices_list)
         # ----------------------设备功能栏----------------------
-        self.device_widget = QWidget(objectName='devices_tools_widget')
-        self.device_layout = QVBoxLayout(self.device_widget, objectName='devices_tools_layout')
-        self.main_layout.addWidget(self.device_widget)
-        # ----------------------设备信息栏----------------------
-        self.device_info_widget = deviceInfoWidget()  # type: deviceInfoWidget
-        # ==self.device_info_widget.setStyleSheet('background-color: rgb(85, 170, 0);')
-        self.device_layout.addWidget(self.device_info_widget)
+        self.device_widget = QWidget(objectName='device_tool_widget')
 
-        # ----------------------设备功能栏----------------------
-        self.device_layout.addStretch(0)
-        # ----------------------主界面----------------------
+        # device_widget设置为水平布局
+        self.device_layout = QHBoxLayout(self.device_widget, objectName='device_tool_layout')
+        self.device_layout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+        # device_widget添加到主布局
+        self.main_layout.addWidget(self.device_widget)
+
+        # ----------------设备信息_常用操作界面-----------------
+        # 将设备信息界与设备常用功能界面,放置在一个水平布局中.
+        self.device_info_tool_widget = QWidget(objectName='device_info_tool_widegt')
+        # self.device_info_tool_widget.setStyleSheet('background-color: rgb(85, 170, 0);')
+        self.device_info_tool_layout = QHBoxLayout(self.device_info_tool_widget, objectName='device_info_tool_layout')
+        self.device_info_tool_layout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+        self.device_layout.addWidget(self.device_info_tool_widget)
+        # ----------------------设备信息界面----------------------
+        self.device_info_widget = deviceInfoWidget()  # type: deviceInfoWidget
+        self.device_info_tool_layout.addWidget(self.device_info_widget)
+        self.device_info_widget.setMinimumSize(QSize(220, 300))
+        self.device_info_widget.setMaximumSize(QSize(220, 300))
+        # ----------------------常用工具界面----------------------
+        self.device_tool_widget = deviceToolWidget()
+        self.device_info_tool_layout.addWidget(self.device_tool_widget)
+        self.device_tool_widget.setMinimumSize(QSize(400, 300))
+        self.device_tool_widget.setMaximumSize(QSize(400, 300))
+
+        # ----------------------主界面---------------------------
         # 设置回调函数
         self.device_btn_hook()
 
