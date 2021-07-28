@@ -136,3 +136,21 @@ class DropQLineEdit(QLineEdit):
     def dropEvent(self, e):  # 放下文件后的动作
         path = e.mimeData().text().replace('file:///', '')  # 删除多余开头
         self.setText(path)
+
+
+class TitleComboLineEdit(QWidget):
+    def __init__(self, title: str, items: list = None, parent=None):
+        """
+        带有标题的
+
+        :param title: 标题文本
+        :param parent:
+        """
+        super(TitleComboLineEdit, self).__init__(parent)
+        self.title = QLabel(title)
+        self.comboBox = QComboBox()
+        self.comboBox.addItems(items)
+
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.addWidget(self.title)
+        self.main_layout.addWidget(self.comboBox)
