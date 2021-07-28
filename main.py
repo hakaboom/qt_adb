@@ -12,7 +12,3 @@ myWin.setStyleSheet(style_sheet)
 
 myWin.show()
 sys.exit(app.exec_())
-
-# QTextBrowser, append(text)
-
-# https://github.com/hustlei/QssStylesheetEditor/blob/e1a145dcd9028893b33ef5c5ae11d82ad02f1b9a/src/ui/preview.py#L182

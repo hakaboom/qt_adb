@@ -15,15 +15,16 @@ class deviceInfoWidget(QGroupBox):
 
         self.mainLayout = QFormLayout(self)
         self.mainLayout.setFormAlignment(Qt.AlignVCenter)
-        self.mainLayout.setVerticalSpacing(20)
+        self.mainLayout.setVerticalSpacing(12)
 
-        self.serialno = TitleLabel('设备名：', '读取中')
-        self.model = TitleLabel('手机型号：', '读取中')
-        self.manufacturer = TitleLabel('手机厂商：', '读取中')
-        self.memory = TitleLabel('内存容量：', '读取中')
-        self.displaySize = TitleLabel('分辨率：', '读取中')
-        self.android_version = TitleLabel('安卓版本：', '读取中')
-        self.sdk_version = TitleLabel('SDK版本：', '读取中')
+        loading_tips = '读取中...'
+        self.serialno = TitleLabel('设备名：', loading_tips)
+        self.model = TitleLabel('手机型号：', loading_tips)
+        self.manufacturer = TitleLabel('手机厂商：', loading_tips)
+        self.memory = TitleLabel('内存容量：', loading_tips)
+        self.displaySize = TitleLabel('分辨率：', loading_tips)
+        self.android_version = TitleLabel('安卓版本：', loading_tips)
+        self.sdk_version = TitleLabel('SDK版本：', loading_tips)
 
         self.mainLayout.addRow(self.serialno.title, self.serialno.text)
         self.mainLayout.addRow(self.model.title, self.model.text)
