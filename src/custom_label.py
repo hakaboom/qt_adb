@@ -2,6 +2,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QSize
 from src.button import CustomButton
+from typing import Union, List
 
 
 class TitleLabel(QWidget):
@@ -14,12 +15,15 @@ class TitleLabel(QWidget):
         :param parent: 父控件
         """
         super(TitleLabel, self).__init__(parent)
-        self.title = QLabel(title, self)
-        self.text = QLabel(text, self)
+        self.title = QLabel(title)
+        self.text = QLabel(text)
 
-        self.mainLayout = QHBoxLayout(self)
-        self.mainLayout.addWidget(self.title)
-        self.mainLayout.addWidget(self.text)
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.addWidget(self.title)
+        self.main_layout.addWidget(self.text)
+
+    def setStretch(self, index, stretch):
+        self.main_layout.setStretch(index, stretch)
 
     def setText(self, text: str):
         self.text.setText(text)
@@ -95,6 +99,10 @@ class FileDropLineEdit(QWidget):
         self.main_layout.addWidget(self.lineEdit)
         self.main_layout.addWidget(self.chose_btn)
 
+        self.setStretch(0, 1)
+        self.setStretch(1, 5)
+        self.setStretch(2, 1)
+
     def set_btn_hook(self, hook):
         """ 设置按钮回调函数 """
         self.chose_btn.set_click_hook(hook)
@@ -110,6 +118,9 @@ class FileDropLineEdit(QWidget):
     def setTitle(self, text: str):
         """ 获取标题文本 """
         self.title.setText(text)
+
+    def setStretch(self, index, stretch):
+        self.main_layout.setStretch(index, stretch)
 
 
 class DropQLineEdit(QLineEdit):
@@ -139,18 +150,40 @@ class DropQLineEdit(QLineEdit):
 
 
 class TitleComboLineEdit(QWidget):
-    def __init__(self, title: str, items: list = None, parent=None):
+    def __init__(self, title: str, items: Union[str, list] = None, btn_text: str = None, parent=None):
         """
         带有标题的
 
         :param title: 标题文本
-        :param parent:
+        :param btn_text: 按钮文本
+        :param parent: 父空间
         """
         super(TitleComboLineEdit, self).__init__(parent)
         self.title = QLabel(title)
+        self.chose_btn = CustomButton(text=btn_text)
         self.comboBox = QComboBox()
-        self.comboBox.addItems(items)
+        self.addItem(items)
 
         self.main_layout = QHBoxLayout(self)
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.comboBox)
+        self.main_layout.addWidget(self.chose_btn)
+
+        self.setStretch(0, 1)
+        self.setStretch(1, 5)
+        self.setStretch(2, 1)
+
+    def setStretch(self, index, stretch):
+        self.main_layout.setStretch(index, stretch)
+
+    def addItem(self, item: Union[str, list]):
+        """ 向comboBox中添加item"""
+        if isinstance(item, str):
+            self.comboBox.addItem(item)
+        elif isinstance(item, list):
+            self.comboBox.addItems(item)
+
+    def setItem(self, item: list):
+        """ 情况comboBox原所有数据, 重新添加items"""
+        self.comboBox.clear()
+        self.addItem(item)

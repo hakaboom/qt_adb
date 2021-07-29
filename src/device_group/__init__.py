@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
-from src.custom_label import TitleLabel, DropQLineEdit, FileDropLineEdit
+from src.custom_label import TitleLabel, DropQLineEdit, FileDropLineEdit, TitleComboLineEdit
 from adbutils import ADBDevice
 
 
@@ -11,7 +11,7 @@ class deviceInfoWidget(QGroupBox):
 
         self.main_layout = QFormLayout(self)
         self.main_layout.setFormAlignment(Qt.AlignVCenter)
-        self.main_layout.setVerticalSpacing(15)
+        self.main_layout.setVerticalSpacing(16)
 
         loading_tips = '读取中...'
         self.serialno = TitleLabel('设备名：', loading_tips)
@@ -56,8 +56,11 @@ class deviceToolWidget(QGroupBox):
         self.main_layout = QFormLayout(self)
         self.main_layout.setFormAlignment(Qt.AlignVCenter)
 
-        self.install_app = FileDropLineEdit('安装应用', placeholderText='拖入需要安装的APK文件', btn_text='开始安装',
+        self.install_app = FileDropLineEdit('安装应用:', placeholderText='拖入需要安装的APK文件', btn_text='开始安装',
                                             extension=('.apk',))
-        self.uninstall_app = 1
+        self.uninstall_app = TitleComboLineEdit(title='卸载应用:', items='1', btn_text='开始卸载')
+        self.clear_app = TitleComboLineEdit(title='清除数据:', btn_text='开始清除')
 
-        self.main_layout.addRow(self.test)
+        self.main_layout.addRow(self.install_app)
+        self.main_layout.addRow(self.uninstall_app)
+        self.main_layout.addRow(self.clear_app)
