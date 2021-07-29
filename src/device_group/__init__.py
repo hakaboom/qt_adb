@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
 from src.custom_label import TitleLabel, DropQLineEdit, FileDropLineEdit, TitleComboLineEdit
 from adbutils import ADBDevice
+from gui.thread import Thread
 
 
 class deviceInfoWidget(QGroupBox):
@@ -30,23 +31,22 @@ class deviceInfoWidget(QGroupBox):
         self.main_layout.addRow(self.android_version.title, self.android_version.text)
         self.main_layout.addRow(self.sdk_version.title, self.sdk_version.text)
 
-    def update_label(self, title, value):
+        self.update_thread = Thread()
+        self.update_thread.connect(self.update)
+
+    def update(self, deviceInfo):
+        self._update_label('serialno', deviceInfo['serialno'])
+        self._update_label('model', deviceInfo['model'])
+        self._update_label('manufacturer', deviceInfo['manufacturer'])
+        self._update_label('memory', deviceInfo['memory'])
+        self._update_label('displaySize', deviceInfo['displaySize'])
+        self._update_label('android_version', deviceInfo['android_version'])
+        self._update_label('sdk_version', deviceInfo['sdk_version'])
+
+    def _update_label(self, title, value):
         if hasattr(self, title):
             label = getattr(self, title)  # type: TitleLabel
             label.setText(str(value))
-
-    def update_label_from_device(self, device: ADBDevice):
-        if isinstance(device, ADBDevice):
-            displayInfo = device.displayInfo
-            width, height = displayInfo['width'], displayInfo['height']
-
-            self.update_label('serialno', device.device_id)
-            self.update_label('model', device.model)
-            self.update_label('manufacturer', device.manufacturer)
-            self.update_label('memory', device.memory)
-            self.update_label('displaySize', f'{width}x{height}')
-            self.update_label('android_version', device.abi_version)
-            self.update_label('sdk_version', device.sdk_version)
 
 
 class deviceToolWidget(QGroupBox):
