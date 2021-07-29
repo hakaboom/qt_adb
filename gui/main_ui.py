@@ -62,6 +62,7 @@ class MainUI(QtWidgets.QMainWindow):
         # ----------------------主界面---------------------------
         # 设置回调函数
         self.init_devices_chose_list_btn_hook()
+        self.init_install_app_hook()
 
     def init_devices_list(self):
         devices = ADBDevice().devices
@@ -98,13 +99,14 @@ class MainUI(QtWidgets.QMainWindow):
             btn_list[0].run_hook()
 
     def init_update_device_info_hook(self):
-        def callback():
+        def callback(cls):
 
             def fun():
-                device = self.selected_device
-                print(f'更新设备信息, device={device}, id={device.device_id}')
+                device = cls.selected_device
                 displayInfo = device.displayInfo
                 width, height = displayInfo['width'], displayInfo['height']
+                print(f'更新设备信息, device={device}, id={device.device_id}')
+
                 return {
                     'serialno': device.device_id,
                     'model': device.model,
@@ -117,7 +119,30 @@ class MainUI(QtWidgets.QMainWindow):
 
             return fun
 
-        self.device_info_widget.update_thread.set_hook(callback())
+        self.device_info_widget.update_thread.set_hook(callback(cls=self))
 
+    def init_install_app_hook(self):
+        install_widget = self.device_tool_widget.install_app
+        install_widget.update_thread = Thread()
+        def callback(cls):
+            def fun():
+                device = cls.selected_device  # type: ADBDevice
+                path = cls.get_install_app_path()
+                print(f'安装应用{path}')
+                if path:
+                    install_widget.setEnabled(False)
+                    try:
+                        device.install(local=path)
+                    except Exception as e:
+                        print(f'安装失败\n{e}')  # TODO: 错误弹窗
+                    install_widget.setEnabled(True)
 
+            return fun
 
+        install_widget.update_thread.set_hook(callback(cls=self))
+        install_widget.set_btn_hook(install_widget.update_thread.start)
+
+    def get_install_app_path(self):
+        """ 从控件中获取安装应用的路径 """
+        path = self.device_tool_widget.install_app.getText()
+        return path
