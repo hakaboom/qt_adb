@@ -10,6 +10,7 @@ from src.device_group import deviceInfoWidget, deviceToolWidget
 from src.button import CustomButton
 from src.fold_widget import foldWidget
 from gui.thread import Thread
+from src.custom_dialog import Dialog
 
 
 class MainUI(QtWidgets.QMainWindow):
@@ -124,6 +125,7 @@ class MainUI(QtWidgets.QMainWindow):
     def init_install_app_hook(self):
         install_widget = self.device_tool_widget.install_app
         install_widget.update_thread = Thread()
+
         def callback(cls):
             def fun():
                 device = cls.selected_device  # type: ADBDevice
@@ -136,7 +138,8 @@ class MainUI(QtWidgets.QMainWindow):
                     except Exception as e:
                         print(f'安装失败\n{e}')  # TODO: 错误弹窗
                     install_widget.setEnabled(True)
-
+                else:
+                    return '安装失败', 122
             return fun
 
         install_widget.update_thread.set_hook(callback(cls=self))

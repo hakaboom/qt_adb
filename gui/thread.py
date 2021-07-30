@@ -15,20 +15,24 @@ class Thread(QThread):
         :param hook: 设置回调函数
         """
         super(Thread, self).__init__()
+        self.hooks = []
+        self.result_hooks = []
+        # self.connect(self.result_handle)
 
-        self.hook = hook
+    def run_result_hooks(self, *args, **kwargs):
+        
 
     def set_hook(self, hook):
         if callable(hook):
-            self.hook = hook
+            self.hooks.append(hook)
 
     def connect(self, func):
         self._signal.connect(func)
 
     def run(self):
         ret = None
-        if callable(self.hook):
-            ret = self.hook()
-
-        if ret:
-            self._signal.emit(ret)
+        for hook in self.hooks:
+            if callable(hook):
+                ret = hook()
+            if ret:
+                self._signal.emit(ret)

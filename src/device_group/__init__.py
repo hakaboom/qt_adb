@@ -32,9 +32,9 @@ class deviceInfoWidget(QGroupBox):
         self.main_layout.addRow(self.sdk_version.title, self.sdk_version.text)
 
         self.update_thread = Thread()
-        self.update_thread.connect(self.update)
+        self.update_thread.connect(self.update_label)
 
-    def update(self, deviceInfo):
+    def update_label(self, deviceInfo):
         self._update_label('serialno', deviceInfo['serialno'])
         self._update_label('model', deviceInfo['model'])
         self._update_label('manufacturer', deviceInfo['manufacturer'])
