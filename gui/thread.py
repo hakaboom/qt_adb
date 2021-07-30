@@ -16,11 +16,7 @@ class Thread(QThread):
         """
         super(Thread, self).__init__()
         self.hooks = []
-        self.result_hooks = []
-        # self.connect(self.result_handle)
-
-    def run_result_hooks(self, *args, **kwargs):
-        
+        self.set_hook(hook)
 
     def set_hook(self, hook):
         if callable(hook):
@@ -36,3 +32,30 @@ class Thread(QThread):
                 ret = hook()
             if ret:
                 self._signal.emit(ret)
+
+
+class LoopThread(Thread):
+    def __init__(self, hook=None, delay=0):
+        super(LoopThread, self).__init__(hook)
+        self.delay = delay
+        self.flag = True  # 控制循环
+
+    def set_delay(self, delay):
+        self.delay = delay
+
+    def stop(self):
+        self.flag = False
+
+    def run(self):
+        while self.flag:
+            ret = None
+            for hook in self.hooks:
+                if callable(hook):
+                    ret = hook()
+
+                if ret:
+                    self._signal.emit(ret)
+
+            if self.delay > 0:
+                time.sleep(self.delay)
+
