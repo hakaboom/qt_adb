@@ -31,17 +31,7 @@ class deviceInfoWidget(QGroupBox):
         self.main_layout.addRow(self.android_version.title, self.android_version.text)
         self.main_layout.addRow(self.sdk_version.title, self.sdk_version.text)
 
-    def update_label(self, deviceInfo):
-        if isinstance(deviceInfo, dict):
-            self._update_label('serialno', deviceInfo['serialno'])
-            self._update_label('model', deviceInfo['model'])
-            self._update_label('manufacturer', deviceInfo['manufacturer'])
-            self._update_label('memory', deviceInfo['memory'])
-            self._update_label('displaySize', deviceInfo['displaySize'])
-            self._update_label('android_version', deviceInfo['android_version'])
-            self._update_label('sdk_version', deviceInfo['sdk_version'])
-
-    def _update_label(self, title, value):
+    def update_label(self, title, value):
         if hasattr(self, title):
             label = getattr(self, title)  # type: TitleLabel
             label.setText(str(value))

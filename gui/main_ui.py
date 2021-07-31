@@ -5,6 +5,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from adbutils import ADBDevice
 from adbutils.exceptions import AdbBaseError, AdbInstallError
+from loguru import logger
 
 
 from src.device_group import deviceInfoWidget, deviceToolWidget
@@ -89,20 +90,23 @@ class MainUI(QtWidgets.QMainWindow):
         deviceList.sort()
         # TODO: 还需要考虑设备断开连接的状态
         for device_id, state in deviceList:
+            # 判断当前状态是否为device,且当前未加入devices_list
             if state == 'device' and device_id not in self.devices_list:
                 item = QListWidgetItem(self.devices_chose_list)
-                button = CustomButton(text=device_id)
+                button = CustomButton(text=device_id, parent=self.devices_chose_list)
                 button.device = ADBDevice(device_id=device_id)
 
                 self.devices_chose_list.add_button(item, button)
-                def callback(cls):
-                    adb = button.device
-                    def fun():
-                        print(f'点击设备：{adb.device_id}')
-                        cls.selected_device = adb
 
+                def callback(cls):
+                    device = button.device
+
+                    def fun():
+                        logger.info(f'点击设备：{device.device_id}')
+                        self.selected_device = device
                     return fun
-                button.set_click_hook(callback(cls=self))
+
+                button.set_click_hook(callback(cls=button))
                 self.devices_list.append(device_id)
 
     def init_device_info_hook(self):
@@ -112,24 +116,38 @@ class MainUI(QtWidgets.QMainWindow):
                     device = cls.selected_device
                     if not device:
                         return None
-                    displayInfo = device.displayInfo
-                    width, height = displayInfo['width'], displayInfo['height']
-                    print(f'更新设备信息, device={device}, id={device.device_id}')
-
-                    return {
-                        'serialno': device.device_id,
-                        'model': device.model,
-                        'manufacturer': device.manufacturer,
-                        'memory': device.memory,
-                        'displaySize': f'{width}x{height}',
-                        'android_version': device.abi_version,
-                        'sdk_version': device.sdk_version,
-                    }
+                    logger.info(f'更新设备信息, device={device}, id={device.device_id}')
+                    return cls._get_device_info(device)
             return fun
 
         self.device_info_thread = LoopThread(hook=callback(cls=self), delay=2)
-        self.device_info_thread.connect(self.device_info_widget.update_label)
+        self.device_info_thread.connect(self.update_device_info)
         self.device_info_thread.start()
+
+    @staticmethod
+    def _get_device_info(device: ADBDevice):
+        displayInfo = device.displayInfo
+        width, height = displayInfo['width'], displayInfo['height']
+        return {
+            'serialno': device.device_id,
+            'model': device.model,
+            'manufacturer': device.manufacturer,
+            'memory': device.memory,
+            'displaySize': f'{width}x{height}',
+            'android_version': device.abi_version,
+            'sdk_version': device.sdk_version,
+        }
+
+    def update_device_info(self, deviceInfo):
+        if isinstance(deviceInfo, dict):
+            device_info_widget = self.device_info_widget
+            device_info_widget.update_label('serialno', deviceInfo['serialno'])
+            device_info_widget.update_label('model', deviceInfo['model'])
+            device_info_widget.update_label('manufacturer', deviceInfo['manufacturer'])
+            device_info_widget.update_label('memory', deviceInfo['memory'])
+            device_info_widget.update_label('displaySize', deviceInfo['displaySize'])
+            device_info_widget.update_label('android_version', deviceInfo['android_version'])
+            device_info_widget.update_label('sdk_version', deviceInfo['sdk_version'])
 
     def init_install_app_hook(self):
         install_widget = self.device_tool_widget.install_app
