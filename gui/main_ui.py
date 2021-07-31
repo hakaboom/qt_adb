@@ -21,10 +21,10 @@ class MainUI(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainUI, self).__init__()
         self.resize(960, 540)
+
         self.setFont(QFont("Microsoft YaHei"))
         self.main_widget = QWidget()
         self.main_layout = QHBoxLayout(self.main_widget)
-
         self.setCentralWidget(self.main_widget)
         # ----------------------设置窗口标题----------------------
         self.setWindowTitle("test")  # 设置窗口名
@@ -58,8 +58,8 @@ class MainUI(QtWidgets.QMainWindow):
         # ----------------------常用工具界面----------------------
         self.device_tool_widget = deviceToolWidget()
         self.device_info_tool_layout.addWidget(self.device_tool_widget)
-        self.device_tool_widget.setMinimumSize(QSize(400, 300))
-        self.device_tool_widget.setMaximumSize(QSize(400, 300))
+        self.device_tool_widget.setMinimumSize(QSize(500, 300))
+        self.device_tool_widget.setMaximumSize(QSize(500, 300))
 
         # ----------------------主界面---------------------------
         self.selected_device = None
@@ -126,7 +126,7 @@ class MainUI(QtWidgets.QMainWindow):
 
     @staticmethod
     def _get_device_info(device: ADBDevice):
-        displayInfo = device.displayInfo
+        displayInfo = device.getPhysicalDisplayInfo()
         width, height = displayInfo['width'], displayInfo['height']
         return {
             'serialno': device.device_id,

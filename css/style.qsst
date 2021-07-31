@@ -2,7 +2,11 @@
 author:lei
 lastedited:2020.2
 * ================================================ */
-$groupBox_bd = #DEDEDE;
+$pushButton_bd = #D3D3D3;
+$comboBox_bd = #E1E1E1;
+
+$groupBox_bd = #EBEBEB;
+
 $text = #222;
 
 $background = #FDFDFD;
@@ -12,6 +16,8 @@ $pressed = #59F;
 $focused = #EA2; /*actived*/
 $grad1a = #EEEEEF; /*gradient start*/
 $grad1b = #DADADF; /*gradient end*/
+
+
 
 QWidget
 {
@@ -71,20 +77,24 @@ QToolTip {
 /* TextBox                                         */
 /* =============================================== */
 QLineEdit {
-    background: $background;/*不建议设为透明，否则table编辑时会字显示*/
+    background: $comboBox_bd;/*不建议设为透明，否则table编辑时会字显示*/
     selection-background-color: $selected;
-    border: 1px solid $border;
-    border-radius: 2px;
-    border-style: inset;
-    padding: 0 1px;
+    border: 1px;
+    border-radius: 5px;
+	padding-left: 5px;
+    /* border-style: inset; */
 }
 
 QLineEdit:hover{
     border-color: $selected;
 }
+
+/*
 QLineEdit:focus{
     border-color: $focused;
 }
+*/
+
 /*QLineEdit[readOnly="true"] { color: gray }*/
 QLineEdit[echoMode="2"]{
     lineedit-password-character: 9679;/*字符的ascii码35 88等 */
@@ -114,11 +124,9 @@ QTextEdit:focus{
 /* Button                                          */
 /* =============================================== */
 QPushButton {
-    border: 1px solid $border;
-    border-radius: 2px;
-    /*background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, 
-        stop: 0 $grad1a, stop: 0.05 $grad1b,stop: 0.5 $grad1b, 
-        stop: 0.9 $grad1a, stop: 1 $grad1a);*/
+    border: 1px;
+    border-radius: 8px;
+    background-color: $pushButton_bd;
     padding: 1px 4px;
     min-width: 50px;
     min-height: 16px;
@@ -443,7 +451,38 @@ QTableView::item:selected:active {
 	color: $grad1a;
 }
 
-QTableWidget QComboBox{
-    margin: 2px;
+QTableWidget::QComboBox{
+    margin: 5px;
     border: none;
 }
+
+/* =============================================== */
+/* QComboBox                                    */
+/* =============================================== */
+QComboBox {
+	background: $comboBox_bd;
+	selection-background-color: $selected;
+	border:1px;
+	border-radius:4px;
+}
+
+QComboBox::down-arrow{
+	min-height:30px;
+	min-width:15px;
+	background: $comboBox_bd;
+	image: url(./icon/Dropdown.png);
+	margin: 5px;
+}
+
+QComboBox::drop-down{
+	min-width:30px;
+	border: none; 
+}    
+
+QComboBox QAbstractItemView {
+    outline: 0px solid gray;   /* 选定项的虚框 */
+    border: 0px solid yellow;   /* 整个下拉窗体的边框 */
+    selection-background-color: $comboBox_bd;   /* 被选中项的背景色 */
+	selection-color: $text;   /* 被选中项的字体色 */
+}
+

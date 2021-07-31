@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon
 from src.button import CustomButton
 from typing import Union, List
 
@@ -99,9 +100,9 @@ class FileDropLineEdit(QWidget):
         self.main_layout.addWidget(self.lineEdit)
         self.main_layout.addWidget(self.chose_btn)
 
-        self.setStretch(0, 1)
-        self.setStretch(1, 5)
-        self.setStretch(2, 1)
+        self.setStretch(0, 2)
+        self.setStretch(1, 10)
+        self.setStretch(2, 3)
 
     def set_btn_hook(self, hook):
         """ 设置按钮回调函数 """
@@ -169,9 +170,9 @@ class TitleComboLineEdit(QWidget):
         self.main_layout.addWidget(self.comboBox)
         self.main_layout.addWidget(self.chose_btn)
 
-        self.setStretch(0, 1)
-        self.setStretch(1, 5)
-        self.setStretch(2, 1)
+        self.setStretch(0, 2)
+        self.setStretch(1, 10)
+        self.setStretch(2, 3)
 
     def setStretch(self, index, stretch):
         self.main_layout.setStretch(index, stretch)

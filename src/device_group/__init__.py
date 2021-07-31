@@ -46,7 +46,7 @@ class deviceToolWidget(QGroupBox):
 
         self.install_app = FileDropLineEdit('安装应用:', placeholderText='拖入需要安装的APK文件', btn_text='开始安装',
                                             extension=('.apk',))
-        self.uninstall_app = TitleComboLineEdit(title='卸载应用:', items='1', btn_text='开始卸载')
+        self.uninstall_app = TitleComboLineEdit(title='卸载应用:', items=['1', '2', '3', '4'], btn_text='开始卸载')
         self.clear_app = TitleComboLineEdit(title='清除数据:', btn_text='开始清除')
 
         self.main_layout.addRow(self.install_app)
