@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, QPoint
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from adbutils import ADBDevice
@@ -8,7 +8,7 @@ from adbutils.exceptions import AdbBaseError, AdbInstallError
 from loguru import logger
 
 
-from src.device_group import deviceInfoWidget, deviceToolWidget
+from src.device_group import deviceInfoWidget, deviceToolWidget, deviceChoseWidget
 from src.button import CustomButton
 from src.fold_widget import foldWidget
 from gui.thread import Thread, LoopThread
@@ -25,13 +25,14 @@ class MainUI(QtWidgets.QMainWindow):
         self.setFont(QFont("Microsoft YaHei"))
         self.main_widget = QWidget()
         self.main_layout = QHBoxLayout(self.main_widget)
+        self.main_layout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.setCentralWidget(self.main_widget)
         # ----------------------设置窗口标题----------------------
         self.setWindowTitle("test")  # 设置窗口名
         # ----------------------设备栏----------------------
         self.devices_chose_list = foldWidget()  # type: foldWidget
         # self.init_devices_list()  # 初始化device_list
-        self.main_layout.addWidget(self.devices_chose_list)
+        # self.main_layout.addWidget(self.devices_chose_list)
         # ----------------------设备功能栏----------------------
         self.device_widget = QWidget(objectName='device_tool_widget')
         # device_widget设置为水平布局
@@ -40,36 +41,49 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_layout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         # device_widget添加到主布局
         self.main_layout.addWidget(self.device_widget)
+
         # ----------------设备信息_常用操作界面-----------------
         # 将设备信息界与设备常用功能界面,放置在一个水平布局中.
         self.device_info_tool_widget = QWidget(objectName='deviceInfoAndToolWidegt')
-        # self.device_info_tool_widget.setStyleSheet('background-color: rgb(85, 170, 0);')
+
         self.device_info_tool_layout = QHBoxLayout(self.device_info_tool_widget)
         self.device_info_tool_layout.setObjectName('deviceInfoAndToolLayout')
         self.device_info_tool_layout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.device_layout.addWidget(self.device_info_tool_widget)
+        # ----------------------设备选择按钮----------------------
+        self.device_chose_widget = QWidget(objectName='deviceChoseWidget')
+        self.device_chose_layout = QVBoxLayout(self.device_chose_widget)
+        self.device_chose_layout.setObjectName('deviceChoseLayout')
+        self.device_info_tool_layout.addWidget(self.device_chose_widget)
+        self.device_chose_widget.setMinimumSize(QSize(230, 390))
+        self.device_chose_widget.setMaximumSize(QSize(230, 390))
+
+        self.device_chose = deviceChoseWidget()
+        self.device_chose_layout.addWidget(self.device_chose)
+        self.device_chose.setMinimumSize(QSize(220, 75))
+        self.device_chose.setMaximumSize(QSize(220, 75))
         # ----------------------设备信息界面----------------------
         self.device_info_widget = deviceInfoWidget()  # type: deviceInfoWidget
         self.device_info_widget.setObjectName('deviceInfoWidget')
-        self.device_info_tool_layout.addWidget(self.device_info_widget)
+        self.device_chose_layout.addWidget(self.device_info_widget)
         self.device_info_widget.setMinimumSize(QSize(220, 300))
         self.device_info_widget.setMaximumSize(QSize(220, 300))
-
         # ----------------------常用工具界面----------------------
         self.device_tool_widget = deviceToolWidget()
         self.device_info_tool_layout.addWidget(self.device_tool_widget)
-        self.device_tool_widget.setMinimumSize(QSize(500, 300))
-        self.device_tool_widget.setMaximumSize(QSize(500, 300))
+        self.device_tool_widget.setMinimumSize(QSize(500, 380))
+        self.device_tool_widget.setMaximumSize(QSize(500, 380))
 
         # ----------------------主界面---------------------------
+        # self.device_chose_widget.setStyleSheet('background-color: rgb(85, 170, 0);')
         self.selected_device = None
         self.devices_list = []
         # 设置回调函数
         self.devices_list_thread = None
         self.device_info_thread = None
-        self.init_devices_list_loop()
-        self.init_install_app_hook()
-        self.init_device_info_hook()
+        # self.init_devices_list_loop()
+        # self.init_install_app_hook()
+        # self.init_device_info_hook()
 
     def init_devices_list_loop(self):
         def callback():

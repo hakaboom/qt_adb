@@ -52,3 +52,14 @@ class deviceToolWidget(QGroupBox):
         self.main_layout.addRow(self.install_app)
         self.main_layout.addRow(self.uninstall_app)
         self.main_layout.addRow(self.clear_app)
+
+
+class deviceChoseWidget(QGroupBox):
+    def __init__(self, parent=None):
+        super(deviceChoseWidget, self).__init__('设备选择', parent)
+
+        self.main_layout = QFormLayout(self)
+
+        self.device_chose = TitleComboLineEdit(title='卸载应用:', items=['1', '2', '3', '4'], btn_text='开始卸载')
+
+        self.main_layout.addRow(self.device_chose)

@@ -5,7 +5,7 @@ lastedited:2020.2
 $pushButton_bd = #D3D3D3;
 $comboBox_bd = #E1E1E1;
 
-$groupBox_bd = #EBEBEB;
+$groupBox_bd = #FFFFFF;
 
 $text = #222;
 
@@ -14,8 +14,8 @@ $border = #999999;
 $selected = #8BF; /*hover*/
 $pressed = #59F;
 $focused = #EA2; /*actived*/
-$grad1a = #EEEEEF; /*gradient start*/
-$grad1b = #DADADF; /*gradient end*/
+$grad1a = #FFFFFF; /*gradient start*/
+$grad1b = #FFFFFF; /*gradient end*/
 
 
 

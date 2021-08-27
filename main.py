@@ -1,4 +1,4 @@
-from gui.main_ui import MainUI
+from gui import MainUI
 from PyQt5.QtWidgets import QApplication
 import sys
 from css.constant import QSSLoader

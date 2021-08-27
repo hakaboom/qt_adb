@@ -2,10 +2,15 @@
 author:lei
 lastedited:2020.2
 * ================================================ */
+
+
+
 /*hover*/
 /*actived*/
 /*gradient start*/
 /*gradient end*/
+
+
 
 QWidget
 {
@@ -65,20 +70,24 @@ QToolTip {
 /* TextBox                                         */
 /* =============================================== */
 QLineEdit {
-    background: #FDFDFD;/*不建议设为透明，否则table编辑时会字显示*/
+    background: #FFFFFF;/*不建议设为透明，否则table编辑时会字显示*/
     selection-background-color: #8BF;
-    border: 1px solid #999999;
-    border-radius: 2px;
-    border-style: inset;
-    padding: 0 1px;
+    border: 1px;
+    border-radius: 5px;
+	padding-left: 5px;
+    /* border-style: inset; */
 }
 
 QLineEdit:hover{
     border-color: #8BF;
 }
+
+/*
 QLineEdit:focus{
     border-color: #EA2;
 }
+*/
+
 /*QLineEdit[readOnly="true"] { color: gray }*/
 QLineEdit[echoMode="2"]{
     lineedit-password-character: 9679;/*字符的ascii码35 88等 */
@@ -108,11 +117,9 @@ QTextEdit:focus{
 /* Button                                          */
 /* =============================================== */
 QPushButton {
-    border: 1px solid #999999;
-    border-radius: 2px;
-    /*background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, 
-        stop: 0 #EEEEEF, stop: 0.05 #DADADF,stop: 0.5 #DADADF, 
-        stop: 0.9 #EEEEEF, stop: 1 #EEEEEF);*/
+    border: 1px;
+    border-radius: 8px;
+    background-color: #D3D3D3;
     padding: 1px 4px;
     min-width: 50px;
     min-height: 16px;
@@ -165,8 +172,8 @@ QToolButton[popupMode="1"]{
     border: 1px solid #999999;
     min-height: 15px;
     /*background: qlineargradient(x1:0, y1:0 ,x2:0, y2:1
-        stop: 0 #EEEEEF, stop: 0.05 #DADADF, stop: 0.5 #DADADF
-        stop: 0.95 #EEEEEF stop: 1#EEEEEF)*/
+        stop: 0 #FFFFFF, stop: 0.05 #FFFFFF, stop: 0.5 #FFFFFF
+        stop: 0.95 #FFFFFF stop: 1#FFFFFF)*/
 }
 QToolButton[popupMode="1"]:hover{
     background-color: #8BF;
@@ -229,7 +236,7 @@ QSlider::handle:vertical{
 }
 QSlider::add-page{/*还没有滑上去的地方*/
     border: 1px solid #999999;
-    background:#EEEEEF;
+    background:#FFFFFF;
 }
 QSlider::sub-page{/*已经划过的从地方*/                            
     background: #EA2;
@@ -288,7 +295,7 @@ QDockWidget::title {
 /* GroupBox                                        */
 /* =============================================== */
 QGroupBox {
-    background-color: #DFDFDF;
+    background-color: #EBEBEB;
     border: 1px solid #999999;
     border-radius: 4px;
     margin-top: 0.5em;
@@ -307,7 +314,7 @@ QToolBox{
     border: 1px solid #999999;
 }
 QToolBox::tab {
-    background: #EEEEEF;
+    background: #FFFFFF;
     border: 1px solid #999999;
     border-radius: 1px;
 }
@@ -384,7 +391,7 @@ QHeaderView {
 	padding: 0px;
 }
 QHeaderView::section, QTableCornerButton::section {/*设置表头属性*//*左上角*/
-	background-color: #EEEEEF;
+	background-color: #FFFFFF;
 	padding: 0 3px;
 	border-right: 1px solid #999999;
 	border-bottom: 1px solid #999999;
@@ -408,7 +415,7 @@ QTableWidget, QTableView
     gridline-color: #999999;    /*表格中的网格线条颜色*/
     background: #FDFDFD;
     /*设置交替颜色，需要在函数属性中设置:tableWidget->setAlternatingRowColors(true)*/
-    alternate-background-color: #EEEEEF;
+    alternate-background-color: #FFFFFF;
     /*selection-color:#FDFDFD;    鼠标选中时前景色：文字颜色*/
     selection-background-color:#8BF;   /*鼠标选中时背景色*/
     border:1px solid #999999;  /*边框线的宽度、颜色*/
@@ -429,15 +436,46 @@ QTableView::item:hover {
 
 QTableView::item:selected {
 	background: #8BF;
-	color: #EEEEEF;
+	color: #FFFFFF;
 }
 
 QTableView::item:selected:active {
 	background: #59F;
-	color: #EEEEEF;
+	color: #FFFFFF;
 }
 
-QTableWidget QComboBox{
-    margin: 2px;
+QTableWidget::QComboBox{
+    margin: 5px;
     border: none;
 }
+
+/* =============================================== */
+/* QComboBox                                    */
+/* =============================================== */
+QComboBox {
+	background: #FFFFFF;
+	selection-background-color: #8BF;
+	border:1px;
+	border-radius:4px;
+}
+
+QComboBox::down-arrow{
+	min-height:30px;
+	min-width:15px;
+	background: #FFFFFF;
+	image: url(./icon/Dropdown.png);
+	margin: 5px;
+}
+
+QComboBox::drop-down{
+	min-width:30px;
+	border: none; 
+}    
+
+QComboBox QAbstractItemView {
+    outline: 0px solid gray;   /* 选定项的虚框 */
+    border: 0px solid yellow;   /* 整个下拉窗体的边框 */
+    selection-background-color: #FFFFFF;   /* 被选中项的背景色 */
+	selection-color: #222;   /* 被选中项的字体色 */
+}
+
