@@ -23,6 +23,9 @@ class TitleLabel(QWidget):
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.text)
 
+        self.main_layout.setStretch(0, 1)
+        self.main_layout.setStretch(1, 3)
+
     def setStretch(self, index, stretch):
         self.main_layout.setStretch(index, stretch)
 
@@ -153,11 +156,9 @@ class DropQLineEdit(QLineEdit):
 class TitleComboLineEdit(QWidget):
     def __init__(self, title: str, items: Union[str, list] = None, btn_text: str = None, parent=None):
         """
-        带有标题的
-
         :param title: 标题文本
         :param btn_text: 按钮文本
-        :param parent: 父空间
+        :param parent: 父控件
         """
         super(TitleComboLineEdit, self).__init__(parent)
         self.title = QLabel(title)

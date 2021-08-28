@@ -16,10 +16,10 @@
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>40</y>
-     <width>671</width>
-     <height>531</height>
+     <x>0</x>
+     <y>0</y>
+     <width>971</width>
+     <height>621</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="main_layout" stretch="2,6">
@@ -40,11 +40,11 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>501</width>
-         <height>531</height>
+         <width>721</width>
+         <height>621</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="device_main_layout">
+       <layout class="QHBoxLayout" name="device_main_layout" stretch="3,8">
         <property name="sizeConstraint">
          <enum>QLayout::SetMinAndMaxSize</enum>
         </property>
@@ -58,35 +58,41 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>241</width>
-             <height>521</height>
+             <width>191</width>
+             <height>621</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="device_config_layout">
+           <layout class="QVBoxLayout" name="device_config_layout" stretch="1,6">
             <item>
-             <widget class="QFrame" name="decice_chose">
+             <widget class="QWidget" name="decice_chose" native="true">
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="styleSheet">
                <string notr="true">background-color: rgb(0, 255, 127);</string>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
               </property>
               <widget class="QWidget" name="verticalLayoutWidget_2">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>241</width>
-                 <height>261</height>
+                 <width>191</width>
+                 <height>101</height>
                 </rect>
                </property>
-               <layout class="QVBoxLayout" name="decice_chose_layout">
+               <layout class="QVBoxLayout" name="decice_chose_layout" stretch="2,5">
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="text">
@@ -96,6 +102,9 @@
                    <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget" native="true"/>
                 </item>
                </layout>
               </widget>

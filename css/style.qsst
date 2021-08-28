@@ -125,11 +125,11 @@ QTextEdit:focus{
 /* =============================================== */
 QPushButton {
     border: 1px;
-    border-radius: 8px;
+    border-radius: 2px;
     background-color: $pushButton_bd;
     padding: 1px 4px;
-    min-width: 50px;
-    min-height: 16px;
+    /* min-width: 50px;
+    min-height: 16px;*/
 }
 
 QPushButton:hover{

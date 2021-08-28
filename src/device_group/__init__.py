@@ -12,24 +12,24 @@ class deviceInfoWidget(QGroupBox):
 
         self.main_layout = QFormLayout(self)
         self.main_layout.setFormAlignment(Qt.AlignVCenter)
-        self.main_layout.setVerticalSpacing(16)
+        # self.main_layout.setVerticalSpacing(15)
 
         loading_tips = '读取中...'
-        self.serialno = TitleLabel('设备名：', loading_tips)
+        self.serialno = TitleLabel('设备标识：', loading_tips)
         self.model = TitleLabel('手机型号：', loading_tips)
         self.manufacturer = TitleLabel('手机厂商：', loading_tips)
         self.memory = TitleLabel('内存容量：', loading_tips)
-        self.displaySize = TitleLabel('分辨率：', loading_tips)
+        self.displaySize = TitleLabel('分辨率   ：', loading_tips)
         self.android_version = TitleLabel('安卓版本：', loading_tips)
         self.sdk_version = TitleLabel('SDK版本：', loading_tips)
 
-        self.main_layout.addRow(self.serialno.title, self.serialno.text)
-        self.main_layout.addRow(self.model.title, self.model.text)
-        self.main_layout.addRow(self.manufacturer.title, self.manufacturer.text)
-        self.main_layout.addRow(self.memory.title, self.memory.text)
-        self.main_layout.addRow(self.displaySize.title, self.displaySize.text)
-        self.main_layout.addRow(self.android_version.title, self.android_version.text)
-        self.main_layout.addRow(self.sdk_version.title, self.sdk_version.text)
+        self.main_layout.addRow(self.serialno)
+        self.main_layout.addRow(self.model)
+        self.main_layout.addRow(self.manufacturer)
+        self.main_layout.addRow(self.memory)
+        self.main_layout.addRow(self.displaySize)
+        self.main_layout.addRow(self.android_version)
+        self.main_layout.addRow(self.sdk_version)
 
     def update_label(self, title, value):
         if hasattr(self, title):

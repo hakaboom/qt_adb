@@ -13,8 +13,10 @@ from src.button import CustomButton
 from src.fold_widget import foldWidget
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
+from utils import DeviceList
 
 import time
+from typing import Tuple
 
 
 class MainUI(QtWidgets.QMainWindow):
@@ -77,12 +79,12 @@ class MainUI(QtWidgets.QMainWindow):
         # ----------------------主界面---------------------------
         # self.device_chose_widget.setStyleSheet('background-color: rgb(85, 170, 0);')
         self.selected_device = None
-        self.devices_list = []
+        self.devices_list = DeviceList()
         # 设置回调函数
         self.devices_list_thread = None
         self.device_info_thread = None
         # self.init_devices_list_loop()
-        # self.init_install_app_hook()
+        self.init_install_app_hook()
         # self.init_device_info_hook()
 
     def init_devices_list_loop(self):
@@ -98,30 +100,33 @@ class MainUI(QtWidgets.QMainWindow):
         self.devices_list_thread.connect(self.update_devices_list)
         self.devices_list_thread.start()
 
-    def update_devices_list(self, deviceList):
-        deviceList = list(filter(None, [state == 'device' and (device_id, state) or None
-                                        for device_id, state in deviceList.items()]))
-        deviceList.sort()
-        # TODO: 还需要考虑设备断开连接的状态
-        for device_id, state in deviceList:
-            # 判断当前状态是否为device,且当前未加入devices_list
+    def update_devices_list(self, deviceList: dict):
+        # print(';'.join([f'{device_id}:{state}' for device_id, state in deviceList.items()]))
+        # Step1: 检查已经加入的设备是否还在线
+        for device_id in self.devices_list:
+            if not self.devices_list.get_device_status_by_id(device_id):
+                logger.info(f'设备 {device_id} 已离线')
+
+        # Step2: 未加入的设备创建绑定按钮,添加到devices_chose_list中
+        for device_id, state in deviceList.items():
             if state == 'device' and device_id not in self.devices_list:
-                item = QListWidgetItem(self.devices_chose_list)
-                button = CustomButton(text=device_id, parent=self.devices_chose_list)
-                button.device = ADBDevice(device_id=device_id)
-
+                device, item, button = self.create_device_btn(device_id)
                 self.devices_chose_list.add_button(item, button)
+                self.devices_list.add_device(device)
+                logger.info(f'添加设备： {device_id} ')
 
-                def callback(cls):
-                    device = button.device
+    def create_device_btn(self, device_id: str) -> Tuple[ADBDevice, QListWidgetItem, CustomButton]:
+        device = ADBDevice(device_id)
+        item = QListWidgetItem(self.devices_chose_list)
+        button = CustomButton(text=device_id, parent=self.devices_chose_list)
 
-                    def fun():
-                        logger.info(f'点击设备：{device.device_id}')
-                        self.selected_device = device
-                    return fun
-
-                button.set_click_hook(callback(cls=button))
-                self.devices_list.append(device_id)
+        def callback(adb: ADBDevice):
+            def fun():
+                logger.info(f'选中设备: {adb.device_id}')
+                self.selected_device = adb
+            return fun
+        button.set_click_hook(callback(adb=device))
+        return device, item, button
 
     def init_device_info_hook(self):
         def callback(cls):
