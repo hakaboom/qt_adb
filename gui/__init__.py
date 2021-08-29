@@ -64,7 +64,7 @@ class MainUI(QtWidgets.QMainWindow):
         # --------------------------------------------------------------------------------------------------------------
         # 设备选择控件 布局: 垂直布局
         self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
-        self.device_chose_control.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
+        # self.device_chose_control.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
         self.device_chose = ComboBoxWithButton(parent=self.device_chose_control.widget, btn_text='刷新设备')
         self.device_chose.comboBox.setMinimumHeight(30)
         self.device_chose.btn.setMinimumHeight(30)
@@ -72,8 +72,7 @@ class MainUI(QtWidgets.QMainWindow):
         self._set_device_chose_callback()
         # --------------------------------------------------------------------------------------------------------------
         self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
-        self.device_info_control.setStyleSheet('background-color: rgb(255, 170, 0);')
-        self._create_device_info_widget()
+        self.device_info_groupBox = self._create_device_info_widget(self.device_info_control.widget)
         self._set_device_info_callback()
 
         self.device_config_layout.addWidget(self.device_chose_control)
@@ -118,9 +117,9 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_chose.btn.update_thread = update_thread
         self.device_chose.btn.set_click_hook(update_thread.start)
 
-    def _create_device_info_widget(self):
-
-        groupBox = GroupBox(parent=self.device_info_control.widget)
+    @staticmethod
+    def _create_device_info_widget(widget: QWidget):
+        groupBox = GroupBox(parent=widget)
         groupBox.main_layout.setVerticalSpacing(15)
 
         loading_tips = '读取中...'
@@ -140,6 +139,8 @@ class MainUI(QtWidgets.QMainWindow):
         groupBox.addRow('安卓版本:', groupBox.android_version)
         groupBox.addRow('SDK版本:', groupBox.sdk_version)
 
+        return groupBox
+
     @staticmethod
     def _get_device_info(device: ADBDevice):
         displayInfo = device.getPhysicalDisplayInfo()
@@ -154,17 +155,40 @@ class MainUI(QtWidgets.QMainWindow):
             'sdk_version': device.sdk_version,
         }
 
+    def _update_device_info(self, deviceInfo: dict):
+        if isinstance(deviceInfo, dict):
+            device_info = self.device_info_groupBox
+            device_info.update_label('serialno', deviceInfo['serialno'])
+            device_info.update_label('model', deviceInfo['model'])
+            device_info.update_label('manufacturer', deviceInfo['manufacturer'])
+            device_info.update_label('memory', deviceInfo['memory'])
+            device_info.update_label('displaySize', deviceInfo['displaySize'])
+            device_info.update_label('android_version', deviceInfo['android_version'])
+            device_info.update_label('sdk_version', deviceInfo['sdk_version'])
+
     def _set_device_info_callback(self):
         def callback(cls):
             def fun():
-                logger.warning('test')
-                time.sleep(5)
-                current_device = cls.device_chose.currentText()
-                logger.debug(f'tasdasd:{current_device}')
-
+                cls.device_chose.setEnabled(False)
+                try:
+                    current_device = cls.device_chose.currentText()
+                    device = ADBDevice(current_device)
+                    device_info = cls._get_device_info(device)
+                    cls._update_device_info(device_info)
+                except AdbBaseError as err:
+                    return AdbBaseError(err)
+                finally:
+                    cls.device_chose.setEnabled(True)
             return fun
 
         update_thread = Thread()
         update_thread.set_hook(callback(cls=self))
+        update_thread.connect(self.raise_dialog)
 
-        self.device_chose.activated.connect(update_thread.test)
+        self.device_chose.activated.connect(lambda: update_thread.start())
+
+    def raise_dialog(self, exceptions):
+        if isinstance(exceptions, AdbBaseError):
+            logger.error(str(exceptions))
+            dialog = InfoDialog(text='错误', infomativeText=str(exceptions), parent=self)
+            dialog.open()

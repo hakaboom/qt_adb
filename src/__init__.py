@@ -117,6 +117,11 @@ class GroupBox(QWidget):
     def addRow(self, label: str, field: QWidget):
         self.main_layout.addRow(label, field)
 
+    def update_label(self, title, value):
+        if hasattr(self, title):
+            label = getattr(self, title)
+            label.setText(str(value))
+
 
 class Label(QLabel):
     def __init__(self, title: str = None, parent=None):
