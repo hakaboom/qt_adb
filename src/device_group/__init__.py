@@ -37,7 +37,7 @@ class deviceInfoWidget(QGroupBox):
             label.setText(str(value))
 
 
-class deviceToolWidget(QGroupBox):
+class deviceToolWidget(object):
     def __init__(self, parent=None):
         super(deviceToolWidget, self).__init__('常用工具', parent)
 

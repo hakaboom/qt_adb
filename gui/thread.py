@@ -33,6 +33,8 @@ class Thread(QThread):
             if ret:
                 self._signal.emit(ret)
 
+    def test(self, *args, **kwargs):
+        print(args, kwargs)
 
 class LoopThread(Thread):
     def __init__(self, hook=None, delay=0):

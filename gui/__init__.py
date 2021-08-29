@@ -10,7 +10,7 @@ from adbutils.exceptions import AdbBaseError, AdbInstallError
 from loguru import logger
 
 
-from src import BaseControl, ComboBoxWithButton
+from src import BaseControl, ComboBoxWithButton, GroupBox, Label
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
 
@@ -63,31 +63,26 @@ class MainUI(QtWidgets.QMainWindow):
 
         # --------------------------------------------------------------------------------------------------------------
         # 设备选择控件 布局: 垂直布局
-        self.device_chose_widget = QWidget(objectName='device_chose')
-        # self.device_chose_widget.setStyleSheet('background-color: rgb(0, 255, 127);')
-        self.device_chose_layout = QVBoxLayout(self.device_chose_widget)
-        self.device_chose_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.device_chose_control = BaseControl(title='设备选择', objectName='decice_chose_control')
-        # self.device_chose_control.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
-        self.device_chose_layout.addWidget(self.device_chose_control)
+        self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
+        self.device_chose_control.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
         self.device_chose = ComboBoxWithButton(parent=self.device_chose_control.widget, btn_text='刷新设备')
-        # self.device_chose.comboBox.setStyleSheet('background-color: rgb(0, 255, 127);')
         self.device_chose.comboBox.setMinimumHeight(30)
         self.device_chose.btn.setMinimumHeight(30)
         self.device_chose_thread = None
-        self._device_chose()
+        self._set_device_chose_callback()
         # --------------------------------------------------------------------------------------------------------------
-        self.device_info_widget = QWidget(objectName='device_info')
-        # self.device_info_widget.setStyleSheet('background-color: rgb(255, 255, 127);')
+        self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
+        self.device_info_control.setStyleSheet('background-color: rgb(255, 170, 0);')
+        self._create_device_info_widget()
+        self._set_device_info_callback()
 
-        self.device_config_layout.addWidget(self.device_chose_widget)
-        self.device_config_layout.addWidget(self.device_info_widget)
+        self.device_config_layout.addWidget(self.device_chose_control)
+        self.device_config_layout.addWidget(self.device_info_control)
 
         self.device_config_layout.setStretch(0, 1)
         self.device_config_layout.setStretch(1, 6)
 
-    def _device_chose(self):
+    def _set_device_chose_callback(self):
         """ 使用device_chose控件进行回调 """
         # 使用控件self.device_chose,绑定btn回调,像comboBox中刷新组件
         client = ADBClient()
@@ -123,7 +118,53 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_chose.btn.update_thread = update_thread
         self.device_chose.btn.set_click_hook(update_thread.start)
 
-        def select_device():
-            logger.info(f'选中设备{self.device_chose.currentText()}')
+    def _create_device_info_widget(self):
 
-        self.device_chose.currentIndexChanged.connect(select_device)
+        groupBox = GroupBox(parent=self.device_info_control.widget)
+        groupBox.main_layout.setVerticalSpacing(15)
+
+        loading_tips = '读取中...'
+        groupBox.serialno = Label(loading_tips)
+        groupBox.model = Label(loading_tips)
+        groupBox.manufacturer = Label(loading_tips)
+        groupBox.memory = Label(loading_tips)
+        groupBox.displaySize = Label(loading_tips)
+        groupBox.android_version = Label(loading_tips)
+        groupBox.sdk_version = Label(loading_tips)
+
+        groupBox.addRow('设备标识:', groupBox.serialno)
+        groupBox.addRow('手机型号:', groupBox.model)
+        groupBox.addRow('手机厂商:', groupBox.manufacturer)
+        groupBox.addRow('内存容量:', groupBox.memory)
+        groupBox.addRow('分辨率:', groupBox.displaySize)
+        groupBox.addRow('安卓版本:', groupBox.android_version)
+        groupBox.addRow('SDK版本:', groupBox.sdk_version)
+
+    @staticmethod
+    def _get_device_info(device: ADBDevice):
+        displayInfo = device.getPhysicalDisplayInfo()
+        width, height = displayInfo['width'], displayInfo['height']
+        return {
+            'serialno': device.device_id,
+            'model': device.model,
+            'manufacturer': device.manufacturer,
+            'memory': device.memory,
+            'displaySize': f'{width}x{height}',
+            'android_version': device.abi_version,
+            'sdk_version': device.sdk_version,
+        }
+
+    def _set_device_info_callback(self):
+        def callback(cls):
+            def fun():
+                logger.warning('test')
+                time.sleep(5)
+                current_device = cls.device_chose.currentText()
+                logger.debug(f'tasdasd:{current_device}')
+
+            return fun
+
+        update_thread = Thread()
+        update_thread.set_hook(callback(cls=self))
+
+        self.device_chose.activated.connect(update_thread.test)

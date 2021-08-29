@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QSize, QPoint, QRect
+from PyQt5.QtCore import QSize, QPoint, QRect, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from loguru import logger
@@ -21,8 +21,8 @@ class BaseControl(QWidget):
         垂直布局,包含一个标题和一个QWidget
 
         Args:
-            title:
-            parent:
+            title: 标题文字
+            parent: 父控件
         """
         super(BaseControl, self).__init__(parent, objectName=objectName)
 
@@ -30,15 +30,19 @@ class BaseControl(QWidget):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
-        self.title = QLabel(title)
+        self.title = Label(title)
         self.title.setAlignment(QtCore.Qt.AlignCenter)
         self.widget = QWidget(self)
 
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.widget)
+        # self.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
+        self.title.setMaximumHeight(30)
+        # self.setStretch(0, 2)
+        # self.setStretch(1, 5)
 
-        self.main_layout.setStretch(0, 2)
-        self.main_layout.setStretch(1, 5)
+    def setStretch(self, index: int, stretch: int):
+        self.main_layout.setStretch(index, stretch)
 
 
 class ComboBoxWithButton(object):
@@ -97,3 +101,24 @@ class ComboBoxWithButton(object):
     @property
     def currentIndexChanged(self):
         return self.comboBox.currentIndexChanged
+
+    @property
+    def activated(self):
+        return self.comboBox.activated
+
+
+class GroupBox(QWidget):
+    def __init__(self, parent=None):
+        super(GroupBox, self).__init__(parent=parent)
+
+        self.main_layout = QFormLayout(self)
+        # self.main_layout.setFormAlignment(Qt.AlignTop)
+
+    def addRow(self, label: str, field: QWidget):
+        self.main_layout.addRow(label, field)
+
+
+class Label(QLabel):
+    def __init__(self, title: str = None, parent=None):
+        super(Label, self).__init__(text=title, parent=parent)
+
