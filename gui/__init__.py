@@ -11,6 +11,8 @@ from loguru import logger
 
 
 from src import BaseControl, ComboBoxWithButton, GroupBox, Label
+from src.custom_label import TitleLabel
+from src.device_group import deviceInfoWidget
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
 
@@ -73,6 +75,7 @@ class MainUI(QtWidgets.QMainWindow):
         # --------------------------------------------------------------------------------------------------------------
         self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
         self.device_info_groupBox = self._create_device_info_widget(self.device_info_control.widget)
+
         self._set_device_info_callback()
 
         self.device_config_layout.addWidget(self.device_chose_control)
@@ -99,20 +102,24 @@ class MainUI(QtWidgets.QMainWindow):
                 if current_device:
                     cls.device_chose.addItem(current_device)
 
-                # 从adb devices中,获取最新的设备信息
-                devices = adb.devices
-                for device_id, state in devices.items():
-                    if state != 'device' or device_id == current_device:
-                        continue
-                    cls.device_chose.addItem(device_id)
-
-                cls.device_chose.setEnabled(True)
-                logger.debug(devices)
+                try:
+                    # 从adb devices中,获取最新的设备信息
+                    devices = adb.devices
+                    logger.debug(devices)
+                    for device_id, state in devices.items():
+                        if state != 'device' or device_id == current_device:
+                            continue
+                        cls.device_chose.addItem(device_id)
+                except AdbBaseError as err:
+                    return AdbBaseError(err)
+                finally:
+                    cls.device_chose.setEnabled(True)
 
             return fun
 
         update_thread = Thread()
         update_thread.set_hook(callback(adb=client, cls=self))
+        update_thread.connect(self.raise_dialog)
 
         self.device_chose.btn.update_thread = update_thread
         self.device_chose.btn.set_click_hook(update_thread.start)
@@ -185,7 +192,7 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread.set_hook(callback(cls=self))
         update_thread.connect(self.raise_dialog)
 
-        self.device_chose.activated.connect(lambda: update_thread.start())
+        self.device_chose.currentIndexChanged.connect(lambda: update_thread.start())
 
     def raise_dialog(self, exceptions):
         if isinstance(exceptions, AdbBaseError):

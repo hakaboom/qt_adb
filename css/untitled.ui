@@ -62,7 +62,7 @@
              <height>621</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="device_config_layout" stretch="1,6">
+           <layout class="QVBoxLayout" name="device_config_layout" stretch="1,5,2">
             <item>
              <widget class="QWidget" name="decice_chose" native="true">
               <property name="enabled">
@@ -115,7 +115,29 @@
               <property name="styleSheet">
                <string notr="true">background-color: rgb(255, 255, 127);</string>
               </property>
+              <widget class="QWidget" name="formLayoutWidget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>191</width>
+                 <height>521</height>
+                </rect>
+               </property>
+               <layout class="QFormLayout" name="formLayout">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>TextLabel</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_2" native="true"/>
             </item>
            </layout>
           </widget>

@@ -111,8 +111,9 @@ class GroupBox(QWidget):
     def __init__(self, parent=None):
         super(GroupBox, self).__init__(parent=parent)
 
-        self.main_layout = QFormLayout(self)
-        # self.main_layout.setFormAlignment(Qt.AlignTop)
+        self.main_layout = QFormLayout(parent)
+        self.main_layout.setFormAlignment(Qt.AlignTop)
+        self.main_layout.setLabelAlignment(Qt.AlignCenter)
 
     def addRow(self, label: str, field: QWidget):
         self.main_layout.addRow(label, field)

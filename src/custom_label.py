@@ -6,7 +6,7 @@ from src.button import CustomButton
 from typing import Union, List
 
 
-class TitleLabel(QWidget):
+class TitleLabel(QGroupBox):
     def __init__(self, title: str, text: str = None, parent=None):
         """
         带标题的文本控件,例如 用户名：xxxxxxxx
