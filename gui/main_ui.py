@@ -10,6 +10,7 @@ from loguru import logger
 
 from src.device_group import deviceInfoWidget, deviceToolWidget, deviceChoseWidget
 from src.button import CustomButton
+from src.custom_label import FileDropLineEdit
 from src.fold_widget import foldWidget
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog

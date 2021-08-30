@@ -10,8 +10,8 @@ from adbutils.exceptions import AdbBaseError, AdbInstallError
 from loguru import logger
 
 
-from src import BaseControl, ComboBoxWithButton, GroupBox, Label
-from src.custom_label import TitleLabel
+from src import BaseControl, ComboBoxWithButton, FormLayout, Label
+from src.custom_label import TitleLabel, FileDropLineEdit
 from src.device_group import deviceInfoWidget
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
@@ -54,7 +54,7 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_main_layout.setContentsMargins(5, 5, 5, 5)
 
         self.device_tool_widget = QWidget(objectName='device_tool')
-        # self.device_tool_widget.setStyleSheet('background-color: rgb(0, 255, 255);')
+        self.device_tool_widget.setStyleSheet('background-color: rgb(255, 170, 0);')
         self.device_main_layout.addWidget(self.device_tool_widget)
 
         self.device_main_layout.setStretch(0, 3)
@@ -63,19 +63,19 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_config_layout = QVBoxLayout(self.device_config_widget)
         self.device_config_layout.setContentsMargins(5, 5, 5, 5)
 
+        self.device_tool_layout = QVBoxLayout(self.device_tool_widget)
+        self.device_tool_layout.setContentsMargins(5, 5, 5, 5)
         # --------------------------------------------------------------------------------------------------------------
         # 设备选择控件 布局: 垂直布局
         self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
-        # self.device_chose_control.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
-        self.device_chose = ComboBoxWithButton(parent=self.device_chose_control.widget, btn_text='刷新设备')
-        self.device_chose.comboBox.setMinimumHeight(30)
-        self.device_chose.btn.setMinimumHeight(30)
+        self.device_chose_widget = self._create_device_chose_widget(parent=self.device_chose_control.widget)
         self.device_chose_thread = None
         self._set_device_chose_callback()
         # --------------------------------------------------------------------------------------------------------------
+        # 设备信息控件 布局：垂直布局
         self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
-        self.device_info_groupBox = self._create_device_info_widget(self.device_info_control.widget)
-
+        self.device_info_widget = self._create_device_info_widget(parent=self.device_info_control.widget)
+        self.device_info_control.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self._set_device_info_callback()
 
         self.device_config_layout.addWidget(self.device_chose_control)
@@ -83,24 +83,31 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.device_config_layout.setStretch(0, 1)
         self.device_config_layout.setStretch(1, 6)
+    # --------------------------------------------------------------------------------------------------------------
+        # 应用管理
+        self.device_app_control = BaseControl(title='应用管理', objectName='device_app_manager')
+        self.device_app_control.widget.setStyleSheet('background-color: rgb(0, 255, 255);')
+        self.device_tool_layout.addWidget(self.device_app_control)
+
+        self._create_device_app_widget(parent=self.device_app_control.widget)
 
     def _set_device_chose_callback(self):
         """ 使用device_chose控件进行回调 """
-        # 使用控件self.device_chose,绑定btn回调,像comboBox中刷新组件
+        # 使用控件self.device_chose_widget,绑定btn回调,像comboBox中刷新组件
         client = ADBClient()
 
         def callback(adb: ADBClient, cls):
             def fun():
                 logger.debug('刷新设备')
-                cls.device_chose.setEnabled(False)
+                cls.device_chose_widget.setEnabled(False)
 
-                current_device = cls.device_chose.currentText()
+                current_device = cls.device_chose_widget.currentText()
                 # step1: 清除所有item
-                cls.device_chose.clear()
+                cls.device_chose_widget.clear()
 
                 # step2: 讲选中设备,重新添加进item
                 if current_device:
-                    cls.device_chose.addItem(current_device)
+                    cls.device_chose_widget.addItem(current_device)
 
                 try:
                     # 从adb devices中,获取最新的设备信息
@@ -109,11 +116,11 @@ class MainUI(QtWidgets.QMainWindow):
                     for device_id, state in devices.items():
                         if state != 'device' or device_id == current_device:
                             continue
-                        cls.device_chose.addItem(device_id)
+                        cls.device_chose_widget.addItem(device_id)
                 except AdbBaseError as err:
                     return AdbBaseError(err)
                 finally:
-                    cls.device_chose.setEnabled(True)
+                    cls.device_chose_widget.setEnabled(True)
 
             return fun
 
@@ -121,12 +128,19 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread.set_hook(callback(adb=client, cls=self))
         update_thread.connect(self.raise_dialog)
 
-        self.device_chose.btn.update_thread = update_thread
-        self.device_chose.btn.set_click_hook(update_thread.start)
+        self.device_chose_widget.btn.update_thread = update_thread
+        self.device_chose_widget.btn.set_click_hook(update_thread.start)
 
     @staticmethod
-    def _create_device_info_widget(widget: QWidget):
-        groupBox = GroupBox(parent=widget)
+    def _create_device_chose_widget(parent: QWidget):
+        widget = ComboBoxWithButton(parent=parent, btn_text='刷新设备')
+        widget.comboBox.setMinimumHeight(30)
+        widget.btn.setMinimumHeight(30)
+        return widget
+
+    @staticmethod
+    def _create_device_info_widget(parent: QWidget):
+        groupBox = FormLayout(parent=parent)
         groupBox.main_layout.setVerticalSpacing(15)
 
         loading_tips = '读取中...'
@@ -149,6 +163,15 @@ class MainUI(QtWidgets.QMainWindow):
         return groupBox
 
     @staticmethod
+    def _create_device_app_widget(parent: QWidget):
+        groupBox = FormLayout(parent=parent)
+
+        groupBox.install = FileDropLineEdit('安装应用:', placeholderText='拖入需要安装的APK文件', btn_text='开始安装',
+                                            extension=('.apk',))
+
+        groupBox.addRow(groupBox.install)
+
+    @staticmethod
     def _get_device_info(device: ADBDevice):
         displayInfo = device.getPhysicalDisplayInfo()
         width, height = displayInfo['width'], displayInfo['height']
@@ -164,7 +187,7 @@ class MainUI(QtWidgets.QMainWindow):
 
     def _update_device_info(self, deviceInfo: dict):
         if isinstance(deviceInfo, dict):
-            device_info = self.device_info_groupBox
+            device_info = self.device_info_widget
             device_info.update_label('serialno', deviceInfo['serialno'])
             device_info.update_label('model', deviceInfo['model'])
             device_info.update_label('manufacturer', deviceInfo['manufacturer'])
@@ -176,23 +199,23 @@ class MainUI(QtWidgets.QMainWindow):
     def _set_device_info_callback(self):
         def callback(cls):
             def fun():
-                cls.device_chose.setEnabled(False)
+                cls.device_chose_widget.setEnabled(False)
                 try:
-                    current_device = cls.device_chose.currentText()
+                    current_device = cls.device_chose_widget.currentText()
                     device = ADBDevice(current_device)
                     device_info = cls._get_device_info(device)
                     cls._update_device_info(device_info)
                 except AdbBaseError as err:
                     return AdbBaseError(err)
                 finally:
-                    cls.device_chose.setEnabled(True)
+                    cls.device_chose_widget.setEnabled(True)
             return fun
 
         update_thread = Thread()
         update_thread.set_hook(callback(cls=self))
         update_thread.connect(self.raise_dialog)
 
-        self.device_chose.currentIndexChanged.connect(lambda: update_thread.start())
+        self.device_chose_widget.currentIndexChanged.connect(lambda: update_thread.start())
 
     def raise_dialog(self, exceptions):
         if isinstance(exceptions, AdbBaseError):

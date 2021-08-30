@@ -44,6 +44,9 @@ class BaseControl(QWidget):
     def setStretch(self, index: int, stretch: int):
         self.main_layout.setStretch(index, stretch)
 
+    def addSpacerItem(self, spacerItem: QSpacerItem):
+        self.main_layout.addSpacerItem(spacerItem)
+
 
 class ComboBoxWithButton(object):
     """
@@ -107,15 +110,15 @@ class ComboBoxWithButton(object):
         return self.comboBox.activated
 
 
-class GroupBox(QWidget):
+class FormLayout(QWidget):
     def __init__(self, parent=None):
-        super(GroupBox, self).__init__(parent=parent)
+        super(FormLayout, self).__init__(parent=parent)
 
         self.main_layout = QFormLayout(parent)
         self.main_layout.setFormAlignment(Qt.AlignTop)
-        self.main_layout.setLabelAlignment(Qt.AlignCenter)
+        # self.main_layout.setLabelAlignment(Qt.AlignCenter)
 
-    def addRow(self, label: str, field: QWidget):
+    def addRow(self, label: str, field: QWidget=None):
         self.main_layout.addRow(label, field)
 
     def update_label(self, title, value):
