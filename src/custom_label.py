@@ -2,6 +2,8 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
+
+from src import Label
 from src.button import CustomButton
 from typing import Union, List
 
@@ -16,8 +18,8 @@ class TitleLabel(QGroupBox):
         :param parent: 父控件
         """
         super(TitleLabel, self).__init__(parent)
-        self.title = QLabel(title)
-        self.text = QLabel(text)
+        self.title = Label(title)
+        self.text = Label(text)
 
         self.main_layout = QHBoxLayout(self)
         self.main_layout.addWidget(self.title)
@@ -49,7 +51,7 @@ class TitleLineEdit(QWidget):
         :param parent: 父控件
         """
         super(TitleLineEdit, self).__init__(parent)
-        self.title = QLabel(title, parent=self)
+        self.title = Label(title, parent=self)
         self.lineEdit = QLineEdit(text)
         if placeholderText:
             self.lineEdit.setPlaceholderText(placeholderText)
@@ -93,7 +95,7 @@ class FileDropLineEdit(QWidget):
         """
         super(FileDropLineEdit, self).__init__(parent)
 
-        self.title = QLabel(title)
+        self.title = Label(title)
         self.lineEdit = DropQLineEdit(text, placeholderText, extension)
 
         self.chose_btn = CustomButton(text=btn_text)
@@ -161,7 +163,7 @@ class TitleComboLineEdit(QWidget):
         :param parent: 父控件
         """
         super(TitleComboLineEdit, self).__init__(parent)
-        self.title = QLabel(title)
+        self.title = Label(title)
         self.chose_btn = CustomButton(text=btn_text)
         self.comboBox = QComboBox()
         self.addItem(items)

@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import *
 from loguru import logger
 
 
-from src.device_group import deviceInfoWidget, deviceToolWidget, deviceChoseWidget
 from src.button import CustomButton
 from src.fold_widget import foldWidget
 from src.custom_dialog import InfoDialog

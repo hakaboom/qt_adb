@@ -11,7 +11,7 @@ from loguru import logger
 
 
 from src import BaseControl, ComboBoxWithButton, FormLayout, Label
-from src.custom_label import TitleLabel, FileDropLineEdit
+from src.custom_label import TitleLabel, FileDropLineEdit, TitleComboLineEdit
 from src.device_group import deviceInfoWidget
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
@@ -89,7 +89,7 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_app_control.widget.setStyleSheet('background-color: rgb(0, 255, 255);')
         self.device_tool_layout.addWidget(self.device_app_control)
 
-        self._create_device_app_widget(parent=self.device_app_control.widget)
+        self._create_device_app_manage_widget(parent=self.device_app_control.widget)
 
     def _set_device_chose_callback(self):
         """ 使用device_chose控件进行回调 """
@@ -136,6 +136,7 @@ class MainUI(QtWidgets.QMainWindow):
         widget = ComboBoxWithButton(parent=parent, btn_text='刷新设备')
         widget.comboBox.setMinimumHeight(30)
         widget.btn.setMinimumHeight(30)
+        widget.btn.setToolTip('点击后刷新设备列表')
         return widget
 
     @staticmethod
@@ -163,13 +164,8 @@ class MainUI(QtWidgets.QMainWindow):
         return groupBox
 
     @staticmethod
-    def _create_device_app_widget(parent: QWidget):
-        groupBox = FormLayout(parent=parent)
-
-        groupBox.install = FileDropLineEdit('安装应用:', placeholderText='拖入需要安装的APK文件', btn_text='开始安装',
-                                            extension=('.apk',))
-
-        groupBox.addRow(groupBox.install)
+    def _create_device_app_manage_widget(parent: QWidget):
+        # step1:
 
     @staticmethod
     def _get_device_info(device: ADBDevice):
@@ -215,7 +211,7 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread.set_hook(callback(cls=self))
         update_thread.connect(self.raise_dialog)
 
-        self.device_chose_widget.currentIndexChanged.connect(lambda: update_thread.start())
+        self.device_chose_widget.activated.connect(lambda: update_thread.start())
 
     def raise_dialog(self, exceptions):
         if isinstance(exceptions, AdbBaseError):

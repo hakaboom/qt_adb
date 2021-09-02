@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QSize, Qt
-from src.custom_label import TitleLabel, DropQLineEdit, FileDropLineEdit, TitleComboLineEdit
 from adbutils import ADBDevice
-from gui.thread import Thread
+
+from src.custom_label import TitleLabel, DropQLineEdit, FileDropLineEdit, TitleComboLineEdit
 
 
 class deviceInfoWidget(QGroupBox):
