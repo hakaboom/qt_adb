@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import cv2
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSize, QPoint, QRect, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap, QImage
 from PyQt5.QtWidgets import *
+from baseImage import IMAGE
 from loguru import logger
-
 
 from src.button import CustomButton
 from src.fold_widget import foldWidget
@@ -54,6 +55,7 @@ class ComboBoxWithButton(object):
         highlighted	当选中一个已经选中的下拉选项时，发射该信号
 
     """
+
     def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, btn_text: str = None,
                  parent: QWidget = None):
         self.comboBox = QComboBox()
@@ -115,18 +117,47 @@ class FormLayout(QWidget):
 
         self.main_layout = QFormLayout(parent)
         self.main_layout.setFormAlignment(Qt.AlignTop)
+
+        self.rows = {}
         # self.main_layout.setLabelAlignment(Qt.AlignCenter)
 
-    def addRow(self, label: str, field: QWidget=None):
+    def addRow(self, label: str, field: QWidget = None, index=None):
         self.main_layout.addRow(label, field)
+        self.rows[index or label] = field
+
+    def getField(self, index: str):
+        return self.rows.get(index)
 
     def update_label(self, title, value):
-        if hasattr(self, title):
-            label = getattr(self, title)
-            label.setText(str(value))
+        if self.rows.get(title):
+            self.rows[title].setText(str(value))
 
 
 class Label(QLabel):
-    def __init__(self, title: str = None, parent=None):
-        super(Label, self).__init__(text=title, parent=parent)
+    def __init__(self, title: Union[QPixmap, IMAGE, QImage, str] = None, parent=None):
+        super(Label, self).__init__(parent=parent)
+        if isinstance(title, str):
+            self.setText(title)
+        elif isinstance(title, (QPixmap, IMAGE, QImage)):
+            self.setPixmap(title)
 
+    def setPixmap(self, a0: Union[QPixmap, IMAGE, QImage]) -> None:
+        if isinstance(a0, IMAGE):
+            pixmap = QPixmap(cv_to_qtimg(a0))
+        elif isinstance(a0, QImage):
+            pixmap = QPixmap(QImage)
+        elif isinstance(a0, QPixmap):
+            pixmap = a0
+        else:
+            raise ValueError(f'a0 type=<{type(a0)}>, need QPixmap, IMAGE, QImage')
+
+        super(Label, self).setPixmap(pixmap)
+
+    def setText(self, a0: str) -> None:
+        super(Label, self).setText(str(a0))
+
+
+def cv_to_qtimg(img: IMAGE):
+    height, width, depth = img.shape
+    img = img.cvtColor(cv2.COLOR_BGR2RGB)
+    return QImage(img.data, width, height, width * depth, QImage.Format_RGB888)
