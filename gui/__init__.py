@@ -6,7 +6,7 @@ from PyQt5.QtCore import QSize, QPoint, QRect
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import *
 from adbutils import ADBDevice, ADBClient
-from adbutils.extra.aapt import Aapt
+from adbutils.extra.apk import Apk
 from adbutils.exceptions import AdbBaseError, AdbInstallError
 from baseImage import IMAGE
 from loguru import logger
@@ -15,6 +15,7 @@ from loguru import logger
 from src import BaseControl, ComboBoxWithButton, FormLayout, Label, cv_to_qtimg
 from src.custom_label import TitleLabel, FileDropLineEdit, TitleComboLineEdit
 from src.device_group import deviceInfoWidget
+from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
 from gui.thread import Thread, LoopThread
 from src.custom_dialog import InfoDialog
 
@@ -28,7 +29,7 @@ class MainUI(QtWidgets.QMainWindow):
         self.setFixedSize(self.width(), self.height())
         self.setFont(QFont("Microsoft YaHei"))
 
-        # mian_widget 布局: 水平布局
+        # main_widget 布局: 水平布局
         self.main_widget = QWidget(objectName='main_widget')
         self.main_layout = QHBoxLayout(self.main_widget)
         self.setCentralWidget(self.main_widget)
@@ -67,14 +68,12 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.device_tool_layout = QVBoxLayout(self.device_tool_widget)
         self.device_tool_layout.setContentsMargins(5, 5, 5, 5)
-        # --------------------------------------------------------------------------------------------------------------
-        # 设备选择控件 布局: 垂直布局
+        # 设备选择控件 布局: 垂直布局----------------------------------------------------------------------------------------
         self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
         self.device_chose_widget = self._create_device_chose_widget(parent=self.device_chose_control.widget)
         self.device_chose_thread = None
         self._set_device_chose_callback()
-        # --------------------------------------------------------------------------------------------------------------
-        # 设备信息控件 布局：垂直布局
+        # 设备信息控件 布局：垂直布局----------------------------------------------------------------------------------------
         self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
         self.device_info_widget = self._create_device_info_widget(parent=self.device_info_control.widget)
         self.device_info_control.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -85,8 +84,8 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.device_config_layout.setStretch(0, 1)
         self.device_config_layout.setStretch(1, 6)
-    # --------------------------------------------------------------------------------------------------------------
-        # 应用管理
+        # 应用管理-------------------------------------------------------------------------------------------------------
+
         self.device_app_control = BaseControl(title='应用管理', objectName='device_app_control')
         self.device_tool_layout.addWidget(self.device_app_control)
         self.device_app_info_widget = self._create_device_app_manage_widget(parent=self.device_app_control.widget)
@@ -167,25 +166,27 @@ class MainUI(QtWidgets.QMainWindow):
             info为水平布局, 左右两个表单布局,存放app的信息
         """
         main_layout = QVBoxLayout(parent)
+        main_layout.setSpacing(0)
 
         # step1: icon控件
-        icon_widget = QWidget(parent)
+        icon_widget = QWidget(parent, objectName='apk_icon_widget')
+        icon_widget.setMinimumHeight(APK_ICON_HEIGHT + 10)
         icon_widget.setStyleSheet('background-color: rgb(0, 255, 255);')
+
         icon_layout = QHBoxLayout(icon_widget)
-
         main_layout.icon = Label()
-        image_label = Label(IMAGE('./icon/com.hypergryph.arknights.png'))
-
-        icon_layout.addWidget(image_label)
+        icon_layout.setContentsMargins(0, 0, 0, 0)
+        icon_layout.addWidget(main_layout.icon)
         icon_layout.addWidget(Label('test'))
 
         # step2: info控件
-        info_widget = QWidget(parent)
+        info_widget = QWidget(parent, objectName='apk_info_widget')
         info_widget.setStyleSheet('background-color: rgb(255, 255, 127);')
         info_main_layout = QHBoxLayout(info_widget)
+
         # 左右布局
-        _info_left_widget = QWidget(info_widget)
-        _info_right_widget = QWidget(info_widget)
+        _info_left_widget = QWidget(info_widget, objectName='apk_info_left')
+        _info_right_widget = QWidget(info_widget, objectName='apk_info_right')
         info_main_layout.addWidget(_info_left_widget)
         info_main_layout.addWidget(_info_right_widget)
         info_left = FormLayout(parent=_info_left_widget)
@@ -213,8 +214,8 @@ class MainUI(QtWidgets.QMainWindow):
                 try:
                     device = cls.get_current_device()
                     packageName = device.foreground_package
-                    app_info = cls._get_app_info(device=device, packageName=packageName)
-                    cls._update_app_info(app_info)
+                    apk = Apk(device=device, packageName=packageName)
+                    cls._update_app_info(apk)
                 except AdbBaseError as err:
                     return err
             return fun
@@ -225,22 +226,22 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.device_chose_widget.btn.update_thread.set_hook(callback(cls=self))
 
-    @staticmethod
-    def _get_app_info(device: ADBDevice, packageName: str):
-        aapt = Aapt(device)
-        app_info = aapt.get_app_info(packageName=packageName)
-        return app_info
+    def _update_app_info(self, apk: Apk):
+        if isinstance(apk, Apk):
+            icon: Label = self.device_app_info_widget.icon
+            info_left: FormLayout = self.device_app_info_widget.info_left_widget
+            info_right: FormLayout = self.device_app_info_widget.info_right_widget
 
-    def _update_app_info(self, app_info: dict):
-        if isinstance(app_info, dict):
-            info_left = self.device_app_info_widget.info_left_widget
-            info_right = self.device_app_info_widget.info_right_widget
+            icon_local_path = f'./icon/{apk.packageName}.png'
+            apk.get_icon_file(local=icon_local_path)
+            icon.setPixmap(IMAGE(img=icon_local_path).resize(96, 96))
 
-            info_left.getField('app_label_name').setText(app_info['app_name'])
-            info_left.getField('app_package_name').setText(app_info['package_name'])
-            info_left.getField('app_main_activity').setText(app_info['launchable_activity'])
-            info_right.getField('app_version_id').setText(app_info['versionCode'])
-            info_right.getField('app_version_name').setText(app_info['versionName'])
+            info_left.getField('app_label_name').setText(apk.name)
+            info_left.getField('app_package_name').setText(apk.packageName)
+            print(apk.main_activity)
+            info_left.getField('app_main_activity').setText(apk.main_activity)
+            info_right.getField('app_version_id').setText(apk.version_code)
+            info_right.getField('app_version_name').setText(apk.version_name)
 
     @staticmethod
     def _get_device_info(device: ADBDevice):
@@ -259,7 +260,6 @@ class MainUI(QtWidgets.QMainWindow):
     def _update_device_info(self, deviceInfo: dict):
         if isinstance(deviceInfo, dict):
             device_info = self.device_info_widget
-            print(device_info.getField('serialno'))
             device_info.getField('serialno').setText(deviceInfo['serialno'])
             device_info.getField('model').setText(deviceInfo['model'])
             device_info.getField('manufacturer').setText(deviceInfo['manufacturer'])

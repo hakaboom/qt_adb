@@ -64,7 +64,7 @@ class ComboBoxWithButton(object):
 
         self.main_layout = QHBoxLayout(parent)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        # print(self.main_layout.getContentsMargins())
+
         self.main_layout.addWidget(self.comboBox)
         self.main_layout.addWidget(self.btn)
 
