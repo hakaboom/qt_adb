@@ -159,48 +159,53 @@ class MainUI(QtWidgets.QMainWindow):
     @staticmethod
     def _create_device_app_manage_widget(parent: QWidget):
         # 主控件为self.device_app_control
-        """
-            控件主布局为垂直布局
-            共两个控件icon/info
-            icon为水平布局,分别为 app图标--app名
-            info为水平布局, 左右两个表单布局,存放app的信息
-        """
         main_layout = QVBoxLayout(parent)
         main_layout.setSpacing(0)
 
         # step1: icon控件
         icon_widget = QWidget(parent, objectName='apk_icon_widget')
-        icon_widget.setMinimumHeight(APK_ICON_HEIGHT + 10)
+        icon_widget.setMinimumHeight(APK_ICON_HEIGHT + 25)
         icon_widget.setStyleSheet('background-color: rgb(0, 255, 255);')
 
         icon_layout = QHBoxLayout(icon_widget)
         main_layout.icon = Label()
-        icon_layout.setContentsMargins(0, 0, 0, 0)
         icon_layout.addWidget(main_layout.icon)
         icon_layout.addWidget(Label('test'))
 
         # step2: info控件
         info_widget = QWidget(parent, objectName='apk_info_widget')
-        info_widget.setStyleSheet('background-color: rgb(255, 255, 127);')
-        info_main_layout = QHBoxLayout(info_widget)
+        info_main_layout = QVBoxLayout(info_widget)
+        info_main_layout.setContentsMargins(0, 0, 0, 0)
+        info_main_layout.setSpacing(0)
+
+        info_button_widget = QWidget(info_widget, objectName='apk_info_button')
+        info_top_widget = QWidget(info_widget, objectName='apk_top_widget')
+        info_main_layout.addWidget(info_top_widget)
+        info_main_layout.addWidget(info_button_widget)
+
+        loading_tips = '读取中...'
+        # info_top中摆放一些字段较长的类
+        info_top = FormLayout(parent=info_top_widget)
+        main_layout.info_top_widget = info_top
+        info_top.addRow('应用名称：', Label(), index='app_label_name')
+        info_top.addRow('应用包名：', Label(), index='app_package_name')
+        info_top.addRow('主Activity：', Label(), index='app_main_activity')
 
         # 左右布局
-        _info_left_widget = QWidget(info_widget, objectName='apk_info_left')
-        _info_right_widget = QWidget(info_widget, objectName='apk_info_right')
-        info_main_layout.addWidget(_info_left_widget)
-        info_main_layout.addWidget(_info_right_widget)
+        info_button_layout = QHBoxLayout(info_button_widget)
+        info_button_layout.setContentsMargins(0, 0, 0, 0)
+
+        _info_left_widget = QWidget(info_button_widget, objectName='apk_info_left')
+        _info_right_widget = QWidget(info_button_widget, objectName='apk_info_right')
+        info_button_layout.addWidget(_info_left_widget)
+        info_button_layout.addWidget(_info_right_widget)
         info_left = FormLayout(parent=_info_left_widget)
         info_right = FormLayout(parent=_info_right_widget)
-
         main_layout.info_left_widget = info_left
         main_layout.info_right_widget = info_right
 
-        info_left.addRow('应用名称：', Label(), index='app_label_name')
-        info_left.addRow('应用包名：', Label(), index='app_package_name')
-        info_left.addRow('主Activity：', Label(), index='app_main_activity')
-
-        info_right.addRow('版本号：', Label(), index='app_version_id')
-        info_right.addRow('版本名：', Label(), index='app_version_name')
+        info_left.addRow('版本号：', Label(), index='app_version_id')
+        info_left.addRow('版本名：', Label(), index='app_version_name')
 
         main_layout.addWidget(icon_widget)
         main_layout.addWidget(info_widget)
@@ -229,6 +234,7 @@ class MainUI(QtWidgets.QMainWindow):
     def _update_app_info(self, apk: Apk):
         if isinstance(apk, Apk):
             icon: Label = self.device_app_info_widget.icon
+            info_top: FormLayout = self.device_app_info_widget.info_top_widget
             info_left: FormLayout = self.device_app_info_widget.info_left_widget
             info_right: FormLayout = self.device_app_info_widget.info_right_widget
 
@@ -236,12 +242,11 @@ class MainUI(QtWidgets.QMainWindow):
             apk.get_icon_file(local=icon_local_path)
             icon.setPixmap(IMAGE(img=icon_local_path).resize(96, 96))
 
-            info_left.getField('app_label_name').setText(apk.name)
-            info_left.getField('app_package_name').setText(apk.packageName)
-            print(apk.main_activity)
-            info_left.getField('app_main_activity').setText(apk.main_activity)
-            info_right.getField('app_version_id').setText(apk.version_code)
-            info_right.getField('app_version_name').setText(apk.version_name)
+            info_top.getField('app_label_name').setText(apk.name)
+            info_top.getField('app_package_name').setText(apk.packageName)
+            info_top.getField('app_main_activity').setText(apk.main_activity)
+            info_left.getField('app_version_id').setText(apk.version_code)
+            info_left.getField('app_version_name').setText(apk.version_name)
 
     @staticmethod
     def _get_device_info(device: ADBDevice):

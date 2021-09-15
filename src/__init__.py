@@ -116,7 +116,7 @@ class FormLayout(QWidget):
         super(FormLayout, self).__init__(parent=parent)
 
         self.main_layout = QFormLayout(parent)
-        self.main_layout.setFormAlignment(Qt.AlignTop)
+        # self.main_layout.setFormAlignment(Qt.AlignTop)
 
         self.rows = {}
         # self.main_layout.setLabelAlignment(Qt.AlignCenter)
@@ -140,6 +140,8 @@ class Label(QLabel):
             self.setText(title)
         elif isinstance(title, (QPixmap, IMAGE, QImage)):
             self.setPixmap(title)
+
+        self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
     def setPixmap(self, a0: Union[QPixmap, IMAGE, QImage]) -> None:
         if isinstance(a0, IMAGE):
