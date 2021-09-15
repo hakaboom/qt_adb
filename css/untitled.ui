@@ -190,17 +190,7 @@
                  <height>611</height>
                 </rect>
                </property>
-               <layout class="QVBoxLayout" name="device_app_control_layout" stretch="1,24">
-                <item>
-                 <widget class="QLabel" name="device_app_control_label">
-                  <property name="text">
-                   <string>应用管理</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
+               <layout class="QVBoxLayout" name="device_app_control_layout" stretch="0">
                 <item>
                  <widget class="QWidget" name="device_app_control_widget" native="true">
                   <widget class="QWidget" name="verticalLayoutWidget_5">
@@ -212,10 +202,20 @@
                      <height>321</height>
                     </rect>
                    </property>
-                   <layout class="QVBoxLayout" name="device_app_info_layout" stretch="1,3">
+                   <layout class="QVBoxLayout" name="device_app_info_layout" stretch="0,1,3">
                     <property name="spacing">
                      <number>0</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="device_app_control_label">
+                      <property name="text">
+                       <string>应用管理</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QWidget" name="apk_icon_widget" native="true">
                       <property name="styleSheet">
@@ -230,7 +230,7 @@
                          <height>71</height>
                         </rect>
                        </property>
-                       <layout class="QHBoxLayout" name="apk_icon_layout" stretch="1,3">
+                       <layout class="QHBoxLayout" name="apk_icon_layout" stretch="1,5">
                         <item>
                          <widget class="QLabel" name="icon_label">
                           <property name="text">
@@ -239,11 +239,36 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_4">
-                          <property name="text">
-                           <string>应用名</string>
-                          </property>
-                         </widget>
+                         <layout class="QGridLayout" name="gridLayout">
+                          <item row="0" column="1">
+                           <widget class="QPushButton" name="pushButton_2">
+                            <property name="text">
+                             <string>停止</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QPushButton" name="pushButton">
+                            <property name="text">
+                             <string>启动</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="2">
+                           <widget class="QPushButton" name="pushButton_3">
+                            <property name="text">
+                             <string>卸载</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="3">
+                           <widget class="QPushButton" name="pushButton_4">
+                            <property name="text">
+                             <string>PushButton</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                        </layout>
                       </widget>
@@ -254,73 +279,98 @@
                       <property name="styleSheet">
                        <string notr="true">background-color: rgb(255, 83, 160);</string>
                       </property>
-                      <widget class="QWidget" name="horizontalLayoutWidget_4">
+                      <widget class="QWidget" name="verticalLayoutWidget_6">
                        <property name="geometry">
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>501</width>
+                         <width>491</width>
                          <height>231</height>
                         </rect>
                        </property>
-                       <layout class="QHBoxLayout" name="apk_info_layout">
+                       <layout class="QVBoxLayout" name="verticalLayout">
                         <item>
-                         <widget class="QWidget" name="apk_info_left" native="true">
-                          <widget class="QLabel" name="label_3">
-                           <property name="geometry">
-                            <rect>
-                             <x>20</x>
-                             <y>70</y>
-                             <width>111</width>
-                             <height>16</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>apk_info_left_1</string>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_5">
-                           <property name="geometry">
-                            <rect>
-                             <x>20</x>
-                             <y>140</y>
-                             <width>91</width>
-                             <height>16</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>apk_info_left_2</string>
-                           </property>
-                          </widget>
-                         </widget>
+                         <widget class="QWidget" name="apk_info_top" native="true"/>
                         </item>
                         <item>
-                         <widget class="QWidget" name="apk_info_right" native="true">
-                          <widget class="QLabel" name="label_6">
+                         <widget class="QWidget" name="apk_info_button" native="true">
+                          <widget class="QWidget" name="horizontalLayoutWidget_4">
                            <property name="geometry">
                             <rect>
-                             <x>40</x>
-                             <y>60</y>
-                             <width>101</width>
-                             <height>16</height>
+                             <x>0</x>
+                             <y>0</y>
+                             <width>481</width>
+                             <height>111</height>
                             </rect>
                            </property>
-                           <property name="text">
-                            <string>apk_info_right_1</string>
-                           </property>
-                          </widget>
-                          <widget class="QLabel" name="label_7">
-                           <property name="geometry">
-                            <rect>
-                             <x>40</x>
-                             <y>140</y>
-                             <width>101</width>
-                             <height>16</height>
-                            </rect>
-                           </property>
-                           <property name="text">
-                            <string>apk_info_right_2</string>
-                           </property>
+                           <layout class="QHBoxLayout" name="apk_info_button_layout">
+                            <item>
+                             <widget class="QWidget" name="apk_info_left" native="true">
+                              <widget class="QLabel" name="label_3">
+                               <property name="geometry">
+                                <rect>
+                                 <x>40</x>
+                                 <y>30</y>
+                                 <width>111</width>
+                                 <height>16</height>
+                                </rect>
+                               </property>
+                               <property name="text">
+                                <string>apk_info_left_1</string>
+                               </property>
+                              </widget>
+                              <widget class="QLabel" name="label_5">
+                               <property name="geometry">
+                                <rect>
+                                 <x>40</x>
+                                 <y>70</y>
+                                 <width>101</width>
+                                 <height>20</height>
+                                </rect>
+                               </property>
+                               <property name="text">
+                                <string>apk_info_left_2</string>
+                               </property>
+                              </widget>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QWidget" name="apk_info_right" native="true">
+                              <widget class="QLabel" name="label_6">
+                               <property name="geometry">
+                                <rect>
+                                 <x>40</x>
+                                 <y>20</y>
+                                 <width>101</width>
+                                 <height>16</height>
+                                </rect>
+                               </property>
+                               <property name="text">
+                                <string>apk_info_right_1</string>
+                               </property>
+                              </widget>
+                              <widget class="QLabel" name="label_7">
+                               <property name="geometry">
+                                <rect>
+                                 <x>40</x>
+                                 <y>70</y>
+                                 <width>171</width>
+                                 <height>21</height>
+                                </rect>
+                               </property>
+                               <property name="contextMenuPolicy">
+                                <enum>Qt::NoContextMenu</enum>
+                               </property>
+                               <property name="text">
+                                <string>apk_info_right_2</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                               </property>
+                              </widget>
+                             </widget>
+                            </item>
+                           </layout>
                           </widget>
                          </widget>
                         </item>
