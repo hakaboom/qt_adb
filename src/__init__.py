@@ -134,9 +134,10 @@ class FormLayout(QWidget):
 class GridLayout(QWidget):
     def __init__(self, parent=None):
         super(GridLayout, self).__init__(parent=parent)
+        self.setStyleSheet('background-color: rgb(0, 255, 255);')
 
-        self.main_layout = QGridLayout(parent)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout = QFormLayout(parent)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         self.rows = {}
 

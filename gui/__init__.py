@@ -164,17 +164,23 @@ class MainUI(QtWidgets.QMainWindow):
 
         # icon控件
         icon_widget = QWidget(parent, objectName='apk_icon_widget')
-        icon_widget.setMinimumHeight(APK_ICON_HEIGHT + 25)
+        icon_widget.setStyleSheet('background-color: rgb(0, 255, 255);')
 
-        icon_layout = QHBoxLayout(icon_widget)
+        # icon_layout = QHBoxLayout(icon_widget)
+        # icon_layout.setContentsMargins(0, 0, 0, 0)
+
         main_layout.icon = Label(parent=icon_widget)
-        main_layout.icon.setStyleSheet('background-color: rgb(0, 255, 255);')
-        main_layout.tool = GridLayout()
-        main_layout.tool.addWidget(Label('asdas'), 0, 0)
-        main_layout.tool.setStyleSheet('background-color: rgb(255, 255, 0);')
 
-        icon_layout.addWidget(main_layout.icon)
-        icon_layout.addWidget(main_layout.tool)
+        main_layout.icon.setMinimumHeight(APK_ICON_HEIGHT + 10)
+
+        main_layout.tools = FormLayout(parent=icon_widget)
+        main_layout.tools.addRow('设备标识:', Label('test'), index='serialno')
+        main_layout.tools.addRow('设备标识:', Label('test'), index='serialn1o')
+        main_layout.tools.addRow('设备标识:', Label('test'), index='seri1241alno')
+        main_layout.tools.addRow('设备标识:', Label('test'), index='seri124alno')
+        main_layout.tools.addRow('设备标识:', Label('test'), index='ser1354ialno')
+        main_layout.tools.setStyleSheet('background-color: rgb(255, 255, 255);')
+        # icon_layout.addWidget(main_layout.tools)
 
         # info控件
         info_widget = QWidget(parent, objectName='apk_info_widget')
@@ -214,7 +220,7 @@ class MainUI(QtWidgets.QMainWindow):
 
         main_layout.addWidget(icon_widget)
         main_layout.addWidget(info_widget)
-        main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        # main_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         return main_layout
 
