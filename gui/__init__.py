@@ -12,7 +12,7 @@ from baseImage import IMAGE
 from loguru import logger
 
 
-from src import BaseControl, ComboBoxWithButton, FormLayout, Label, cv_to_qtimg
+from src import BaseControl, ComboBoxWithButton, FormLayout, Label, cv_to_qtimg, GridLayout
 from src.custom_label import TitleLabel, FileDropLineEdit, TitleComboLineEdit
 from src.device_group import deviceInfoWidget
 from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
@@ -162,21 +162,24 @@ class MainUI(QtWidgets.QMainWindow):
         main_layout = QVBoxLayout(parent)
         main_layout.setSpacing(0)
 
-        # step1: icon控件
+        # icon控件
         icon_widget = QWidget(parent, objectName='apk_icon_widget')
         icon_widget.setMinimumHeight(APK_ICON_HEIGHT + 25)
-        icon_widget.setStyleSheet('background-color: rgb(0, 255, 255);')
 
         icon_layout = QHBoxLayout(icon_widget)
-        main_layout.icon = Label()
-        icon_layout.addWidget(main_layout.icon)
-        icon_layout.addWidget(Label('test'))
+        main_layout.icon = Label(parent=icon_widget)
+        main_layout.icon.setStyleSheet('background-color: rgb(0, 255, 255);')
+        main_layout.tool = GridLayout()
+        main_layout.tool.addWidget(Label('asdas'), 0, 0)
+        main_layout.tool.setStyleSheet('background-color: rgb(255, 255, 0);')
 
-        # step2: info控件
+        icon_layout.addWidget(main_layout.icon)
+        icon_layout.addWidget(main_layout.tool)
+
+        # info控件
         info_widget = QWidget(parent, objectName='apk_info_widget')
         info_main_layout = QVBoxLayout(info_widget)
         info_main_layout.setContentsMargins(0, 0, 0, 0)
-        info_main_layout.setSpacing(0)
 
         info_button_widget = QWidget(info_widget, objectName='apk_info_button')
         info_top_widget = QWidget(info_widget, objectName='apk_top_widget')
@@ -191,7 +194,7 @@ class MainUI(QtWidgets.QMainWindow):
         info_top.addRow('应用包名：', Label(), index='app_package_name')
         info_top.addRow('主Activity：', Label(), index='app_main_activity')
 
-        # 左右布局
+        # 左右布局,摆放一些普通字段
         info_button_layout = QHBoxLayout(info_button_widget)
         info_button_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -206,6 +209,8 @@ class MainUI(QtWidgets.QMainWindow):
 
         info_left.addRow('版本号：', Label(), index='app_version_id')
         info_left.addRow('版本名：', Label(), index='app_version_name')
+
+        info_right.addRow('包大小：', Label(), index='package_size')
 
         main_layout.addWidget(icon_widget)
         main_layout.addWidget(info_widget)
@@ -247,6 +252,8 @@ class MainUI(QtWidgets.QMainWindow):
             info_top.getField('app_main_activity').setText(apk.main_activity)
             info_left.getField('app_version_id').setText(apk.version_code)
             info_left.getField('app_version_name').setText(apk.version_name)
+            package_size = f'{(apk.device.get_file_size(remote=apk.install_path) / 1024):.1f}MB'
+            info_right.getField('package_size').setText(package_size)
 
     @staticmethod
     def _get_device_info(device: ADBDevice):

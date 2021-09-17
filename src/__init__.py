@@ -38,8 +38,6 @@ class BaseControl(QWidget):
         self.main_layout.addWidget(self.widget)
         # self.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
         self.title.setMaximumHeight(30)
-        # self.setStretch(0, 2)
-        # self.setStretch(1, 5)
 
     def setStretch(self, index: int, stretch: int):
         self.main_layout.setStretch(index, stretch)
@@ -116,12 +114,12 @@ class FormLayout(QWidget):
         super(FormLayout, self).__init__(parent=parent)
 
         self.main_layout = QFormLayout(parent)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         # self.main_layout.setFormAlignment(Qt.AlignTop)
-
-        self.rows = {}
         # self.main_layout.setLabelAlignment(Qt.AlignCenter)
+        self.rows = {}
 
-    def addRow(self, label: str, field: QWidget = None, index=None):
+    def addRow(self, label: str, field: QWidget = None, index: str = None):
         self.main_layout.addRow(label, field)
         self.rows[index or label] = field
 
@@ -131,6 +129,24 @@ class FormLayout(QWidget):
     def update_label(self, title, value):
         if self.rows.get(title):
             self.rows[title].setText(str(value))
+
+
+class GridLayout(QWidget):
+    def __init__(self, parent=None):
+        super(GridLayout, self).__init__(parent=parent)
+
+        self.main_layout = QGridLayout(parent)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.rows = {}
+
+    def addWidget(self, w: QWidget, row: int, column: int, rowSpan: int = 1, columnSpan: int = 1,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = Qt.Alignment(), index: str = None):
+        self.main_layout.addWidget(w, row, column, rowSpan, columnSpan, alignment)
+        self.rows[index or str(w)] = w
+
+    def getField(self, index: Union[str, QWidget]):
+        return self.rows.get(str(index))
 
 
 class Label(QLabel):
