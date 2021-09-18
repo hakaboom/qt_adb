@@ -36,6 +36,7 @@ class BaseControl(QWidget):
 
         self.main_layout.addWidget(self.title)
         self.main_layout.addWidget(self.widget)
+
         # self.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
         self.title.setMaximumHeight(30)
 
@@ -46,7 +47,7 @@ class BaseControl(QWidget):
         self.main_layout.addSpacerItem(spacerItem)
 
 
-class ComboBoxWithButton(object):
+class ComboBoxWithButton(QWidget):
     """
         Activated	当用户选中一个下拉选项时发射该信号
         currentIndexChanged	当下拉选项的索引发生改变时发射该信号
@@ -56,8 +57,10 @@ class ComboBoxWithButton(object):
 
     def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, btn_text: str = None,
                  parent: QWidget = None):
-        self.comboBox = QComboBox()
-        self.btn = CustomButton(text=btn_text, parent=parent)
+        super(ComboBoxWithButton, self).__init__(parent=parent)
+
+        self.comboBox = QComboBox(parent=self)
+        self.btn = CustomButton(text=btn_text, parent=self)
         self.addItem(item)
 
         self.main_layout = QHBoxLayout(parent)
