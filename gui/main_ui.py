@@ -188,7 +188,7 @@ class MainUI(QtWidgets.QMainWindow):
                         install_widget.setEnabled(True)
             return fun
 
-        install_widget.update_thread.set_hook(callback(cls=self))
+        install_widget.update_thread.add_hook(callback(cls=self))
         install_widget.set_btn_hook(install_widget.update_thread.start)
         install_widget.update_thread.connect(self.raise_dialog)
 

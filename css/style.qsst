@@ -2,11 +2,18 @@
 author:lei
 lastedited:2020.2
 * ================================================ */
-$pushButton_bd = #D3D3D3;
-$comboBox_bd = #E1E1E1;
+$button_disable_bd = #CACACA;
+$button_press_bd = #5173F9;
+$button_border_bd = #999999;
+$button_hover_bd = #4E6DEE;
+$button_border = #5599FF;
+$button_text_color = #FFFFFF;
+$button_bd = #2F54EB;
 
-$groupBox_bd = #FFFFFF;
+$main_widget_bd = #E6E6E6;
 
+$baseControl_title_bd = #FFFFFF;
+$baseControl_widget_bd = #FFFFFF;
 $text = #222;
 
 $background = #FDFDFD;
@@ -14,10 +21,8 @@ $border = #999999;
 $selected = #8BF; /*hover*/
 $pressed = #59F;
 $focused = #EA2; /*actived*/
-$grad1a = #FFFFFF; /*gradient start*/
-$grad1b = #FFFFFF; /*gradient end*/
-
-
+$grad1a = #EEEEEF; /*gradient start*/
+$grad1b = #DADADF; /*gradient end*/
 
 QWidget
 {
@@ -77,24 +82,20 @@ QToolTip {
 /* TextBox                                         */
 /* =============================================== */
 QLineEdit {
-    background: $comboBox_bd;/*不建议设为透明，否则table编辑时会字显示*/
+    background: $background;/*不建议设为透明，否则table编辑时会字显示*/
     selection-background-color: $selected;
-    border: 1px;
-    border-radius: 5px;
-	padding-left: 5px;
-    /* border-style: inset; */
+    border: 1px solid $border;
+    border-radius: 2px;
+    border-style: inset;
+    padding: 0 1px;
 }
 
 QLineEdit:hover{
     border-color: $selected;
 }
-
-/*
 QLineEdit:focus{
     border-color: $focused;
 }
-*/
-
 /*QLineEdit[readOnly="true"] { color: gray }*/
 QLineEdit[echoMode="2"]{
     lineedit-password-character: 9679;/*字符的ascii码35 88等 */
@@ -123,31 +124,6 @@ QTextEdit:focus{
 /* =============================================== */
 /* Button                                          */
 /* =============================================== */
-QPushButton {
-    border: 1px;
-    border-radius: 2px;
-    background-color: $pushButton_bd;
-    padding: 1px 4px;
-    /* min-width: 50px;
-    min-height: 16px;*/
-}
-
-QPushButton:hover{
-    background-color: $selected;
-    border-color: $pressed;
-}
-
-QPushButton:pressed
-{
-    border-width: 1px;      
-    background-color: $pressed;
-    border-color: $border;
-}
-
-QPushButton:focus, QPushButton:default {
-    border-color: $focused; /* make the default button prominent */
-}
-
 
 QToolButton,QToolButton:unchecked { /* ToolBar里的按钮和带下拉菜单的按钮 */
     border: 1px solid transparent;
@@ -302,7 +278,7 @@ QDockWidget::title {
 /* GroupBox                                        */
 /* =============================================== */
 QGroupBox {
-    background-color: $groupBox_bd;
+    background-color: $background;
     border: 1px solid $border;
     border-radius: 4px;
     margin-top: 0.5em;
@@ -451,38 +427,99 @@ QTableView::item:selected:active {
 	color: $grad1a;
 }
 
-QTableWidget::QComboBox{
-    margin: 5px;
+QTableWidget QComboBox{
+    margin: 2px;
     border: none;
 }
+
 
 /* =============================================== */
 /* QComboBox                                    */
 /* =============================================== */
 QComboBox {
-	background: $comboBox_bd;
-	selection-background-color: $selected;
-	border:1px;
-	border-radius:4px;
+	background: #FFFFFF;
+	selection-background-color: #8BF;
+	border: 1px solid #999999;
+	border-radius:3px;
 }
 
 QComboBox::down-arrow{
 	min-height:30px;
-	min-width:15px;
-	background: $comboBox_bd;
+	min-width:20px;
+	background: #FFFFFF;
 	image: url(./icon/Dropdown.png);
 	margin: 5px;
 }
 
 QComboBox::drop-down{
 	min-width:30px;
+
 	border: none; 
 }    
 
 QComboBox QAbstractItemView {
     outline: 0px solid gray;   /* 选定项的虚框 */
     border: 0px solid yellow;   /* 整个下拉窗体的边框 */
-    selection-background-color: $comboBox_bd;   /* 被选中项的背景色 */
-	selection-color: $text;   /* 被选中项的字体色 */
+    selection-background-color: #FFFFFF;   /* 被选中项的背景色 */
+	selection-color: #222;   /* 被选中项的字体色 */
 }
+
+QPushButton {
+    border: 1px;
+    border-radius: 2px;
+    background-color: $button_bd;
+    padding: 1px 4px;
+	color: $button_text_color;
+    /* min-width: 50px;
+    min-height: 16px;*/
+}
+
+
+QPushButton:hover{
+    background-color: $button_hover_bd;
+    border-color: $button_border;
+}
+
+QPushButton:disabled{
+	background-color: $button_disable_bd;
+}
+QPushButton:pressed
+{
+    border-width: 1px;      
+    background-color: $button_press_bd;
+    border-color: $button_border_bd;
+}
+
+QPushButton:focus, QPushButton:default {
+    border-color: #EA2; /* make the default button prominent */
+}
+
+QWidget[objectName="device_config"]{
+	 background-color: $main_widget_bd;
+}
+QWidget[objectName="device_tool"]{
+	 background-color: $main_widget_bd;
+}
+
+
+QWidget[name="baseControl_title"]{
+	 background-color: $baseControl_title_bd;
+	 padding: 10px;
+}
+QWidget[name="baseControl_widget"]{
+	 background-color: $baseControl_widget_bd;
+	 border: 1px;
+	 border-radius: 3px;
+	 padding: 20px;
+}
+QWidget[name="baseControl_widget"] > .QWidget{
+	 background-color: $baseControl_widget_bd;
+	 border: 1px;
+	 border-radius: 3px;
+}
+QWidget[name="apk_icon_widget"]{
+	 background-color: $button_border_bd;
+}
+
+
 

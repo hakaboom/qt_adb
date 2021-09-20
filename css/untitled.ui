@@ -33,7 +33,7 @@
     <item>
      <widget class="QWidget" name="device_main" native="true">
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background-color: rgb(229, 229, 229);</string>
       </property>
       <widget class="QWidget" name="horizontalLayoutWidget_2">
        <property name="geometry">
@@ -45,8 +45,11 @@
         </rect>
        </property>
        <layout class="QHBoxLayout" name="device_main_layout" stretch="3,8">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinAndMaxSize</enum>
+         <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <item>
          <widget class="QWidget" name="device_config" native="true">
@@ -58,7 +61,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>191</width>
+             <width>201</width>
              <height>621</height>
             </rect>
            </property>
@@ -230,7 +233,10 @@
                          <height>71</height>
                         </rect>
                        </property>
-                       <layout class="QHBoxLayout" name="apk_icon_layout" stretch="1,5">
+                       <layout class="QHBoxLayout" name="apk_icon_layout" stretch="0,0">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
                         <item>
                          <widget class="QLabel" name="icon_label">
                           <property name="text">

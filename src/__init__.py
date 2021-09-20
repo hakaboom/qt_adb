@@ -7,11 +7,8 @@ from PyQt5.QtWidgets import *
 from baseImage import IMAGE
 from loguru import logger
 
-from src.button import CustomButton
-from src.fold_widget import foldWidget
-from src.custom_dialog import InfoDialog
-
 from typing import Union, Tuple, List
+from functools import wraps
 
 
 class BaseControl(QWidget):
@@ -27,24 +24,38 @@ class BaseControl(QWidget):
         super(BaseControl, self).__init__(parent, objectName=objectName)
 
         self.main_layout = QVBoxLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
 
-        self.title = Label(title)
+        self._title = CustomLabel(title)
+        self._widget = QWidget(self)
+        self._widget.setContentsMargins(0, 0, 0, 0)
+
+        self._title.setProperty('name', 'baseControl_title')
+        self._widget.setProperty('name', 'baseControl_widget')
+
+        self.layout.addWidget(self.title)
+        self.layout.addWidget(self.widget)
+
         self.title.setAlignment(QtCore.Qt.AlignCenter)
-        self.widget = QWidget(self)
 
-        self.main_layout.addWidget(self.title)
-        self.main_layout.addWidget(self.widget)
+    @property
+    def layout(self):
+        return self.main_layout
 
-        # self.widget.setStyleSheet('background-color: rgb(255, 255, 127);')
-        self.title.setMaximumHeight(30)
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def widget(self):
+        return self._widget
 
     def setStretch(self, index: int, stretch: int):
-        self.main_layout.setStretch(index, stretch)
+        self.layout.setStretch(index, stretch)
 
     def addSpacerItem(self, spacerItem: QSpacerItem):
-        self.main_layout.addSpacerItem(spacerItem)
+        self.layout.addSpacerItem(spacerItem)
 
 
 class ComboBoxWithButton(QWidget):
@@ -63,17 +74,24 @@ class ComboBoxWithButton(QWidget):
         self.btn = CustomButton(text=btn_text, parent=self)
         self.addItem(item)
 
-        self.main_layout = QHBoxLayout(parent)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.comboBox.setProperty('name', 'ComboBoxWithButton_comboBox')
+        self.btn.setProperty('name', 'ComboBoxWithButton_btn')
 
-        self.main_layout.addWidget(self.comboBox)
-        self.main_layout.addWidget(self.btn)
+        self._layout = QHBoxLayout(parent)
+
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.comboBox)
+        self.layout.addWidget(self.btn)
 
         self.setStretch(0, 6)
         self.setStretch(0, 1)
 
+    @property
+    def layout(self):
+        return self._layout
+
     def setStretch(self, index: int, stretch: int):
-        self.main_layout.setStretch(index, stretch)
+        self.layout.setStretch(index, stretch)
 
     def addItem(self, item: Union[str, list]):
         """ 向comboBox中添加item"""
@@ -112,18 +130,20 @@ class ComboBoxWithButton(QWidget):
         return self.comboBox.activated
 
 
-class FormLayout(QWidget):
+class CustomFormLayout(QWidget):
     def __init__(self, parent=None):
-        super(FormLayout, self).__init__(parent=parent)
+        super(CustomFormLayout, self).__init__(parent=parent)
 
-        self.main_layout = QFormLayout(parent)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        # self.main_layout.setFormAlignment(Qt.AlignTop)
-        # self.main_layout.setLabelAlignment(Qt.AlignCenter)
+        self._layout = QFormLayout(parent)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.rows = {}
 
+    @property
+    def layout(self):
+        return self._layout
+
     def addRow(self, label: str, field: QWidget = None, index: str = None):
-        self.main_layout.addRow(label, field)
+        self.layout.addRow(label, field)
         self.rows[index or label] = field
 
     def getField(self, index: str):
@@ -134,34 +154,59 @@ class FormLayout(QWidget):
             self.rows[title].setText(str(value))
 
 
-class GridLayout(QWidget):
+class CustomGridLayout(QWidget):
     def __init__(self, parent=None):
-        super(GridLayout, self).__init__(parent=parent)
-        self.setStyleSheet('background-color: rgb(0, 255, 255);')
+        super(CustomGridLayout, self).__init__(parent=parent)
 
-        # self.main_layout = QFormLayout(parent)
-        # self.main_layout.setContentsMargins(0, 0, 0, 0)
-
+        self._layout = QGridLayout(parent)
         self.rows = {}
+
+    @property
+    def layout(self):
+        return self._layout
 
     def addWidget(self, w: QWidget, row: int, column: int, rowSpan: int = 1, columnSpan: int = 1,
                   alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = Qt.Alignment(), index: str = None):
-        self.main_layout.addWidget(w, row, column, rowSpan, columnSpan, alignment)
+        self.layout.addWidget(w, row, column, rowSpan, columnSpan, alignment)
         self.rows[index or str(w)] = w
 
     def getField(self, index: Union[str, QWidget]):
-        return self.rows.get(str(index))
+        if field := self.rows.get(str(index)):
+            return field
+        else:
+            logger.warning(f'未能在找到index:{str(index)}')
 
 
-class Label(QLabel):
-    def __init__(self, title: Union[QPixmap, IMAGE, QImage, str] = None, parent=None):
-        super(Label, self).__init__(parent=parent)
+class CustomLabel(QLabel):
+    def __init__(self, title: Union[QPixmap, IMAGE, QImage, str] = None, parent=None, styleSheet=None):
+        super(CustomLabel, self).__init__(parent=parent)
         if isinstance(title, str):
             self.setText(title)
         elif isinstance(title, (QPixmap, IMAGE, QImage)):
             self.setPixmap(title)
 
+        self.setStyleSheet(styleSheet)
         self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+    def setMinimumSize(self, *__args):
+        super(CustomLabel, self).setMinimumSize(__args)
+        return self
+
+    def setMinimumHeight(self, p_int):
+        super(CustomLabel, self).setMinimumHeight(p_int)
+        return self
+
+    def setMinimumWidth(self, p_int):
+        super(CustomLabel, self).setMinimumWidth(p_int)
+        return self
+
+    def setMaximumHeight(self, p_int):
+        super(CustomLabel, self).setMaximumHeight(p_int)
+        return self
+
+    def setMaximumWidth(self, p_int):
+        super(CustomLabel, self).setMaximumWidth(p_int)
+        return self
 
     def setPixmap(self, a0: Union[QPixmap, IMAGE, QImage]) -> None:
         if isinstance(a0, IMAGE):
@@ -173,10 +218,49 @@ class Label(QLabel):
         else:
             raise ValueError(f'a0 type=<{type(a0)}>, need QPixmap, IMAGE, QImage')
 
-        super(Label, self).setPixmap(pixmap)
+        super(CustomLabel, self).setPixmap(pixmap)
 
     def setText(self, a0: str) -> None:
-        super(Label, self).setText(str(a0))
+        super(CustomLabel, self).setText(str(a0))
+
+
+class CustomButton(QPushButton):
+    # 按钮作为开关
+    def __init__(self, text: str = None, item=None, hook=None, icon=None, parent=None):
+        param = [icon, text, parent]
+        super(CustomButton, self).__init__(*list(filter(None, param)))
+        self.item = item
+        self.hook = hook
+        self.clicked.connect(self.run)
+
+    def setStyleSheet(self, p_str):
+        super(CustomButton, self).setStyleSheet(p_str)
+        return self
+
+    def setMinimumSize(self, *__args):
+        super(CustomButton, self).setMinimumSize(__args)
+        return self
+
+    def setMinimumHeight(self, p_int):
+        super(CustomButton, self).setMinimumHeight(p_int)
+        return self
+
+    def setMinimumWidth(self, p_int):
+        super(CustomButton, self).setMinimumWidth(p_int)
+        return self
+
+    def resizeEvent(self, event):
+        # 解决item的高度问题
+        super(CustomButton, self).resizeEvent(event)
+        if self.item:
+            self.item.setSizeHint(QSize(self.minimumWidth(), self.height()))
+
+    def set_click_hook(self, hook):
+        self.hook = hook
+
+    def run(self):
+        if callable(self.hook):
+            return self.hook()
 
 
 def cv_to_qtimg(img: IMAGE):
