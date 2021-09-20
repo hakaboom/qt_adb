@@ -52,7 +52,7 @@ class QuestionDialog(Dialog):
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
         # 设置默认按钮
-        self.setDefaultButton(QMessageBox.No)
+        self.setDefaultButton(QMessageBox.Yes)
 
         # 退出按钮
         self.setEscapeButton(QMessageBox.No)

@@ -3,8 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon
 
-from src import CustomLabel
-from src.button import CustomButton
+from src import CustomLabel, CustomButton
 from typing import Union, List
 
 

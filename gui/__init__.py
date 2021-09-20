@@ -13,7 +13,7 @@ from loguru import logger
 from css.constant import QSSLoader
 
 from src import (BaseControl, ComboBoxWithButton, CustomFormLayout, CustomLabel, CustomGridLayout, CustomButton,
-                 )
+                 CustomComboBox)
 from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
 from gui.thread import Thread, LoopThread
 from gui.type_hint import type_device_app_manage_widget
@@ -173,8 +173,9 @@ class MainUI(QtWidgets.QMainWindow):
         loading_tips = '读取中...'
         # info_top中摆放一些字段较长的类
         _widget.info_top = CustomFormLayout(parent=info_top_widget)
-        _widget.info_top.layout.setContentsMargins(0, 0, 0, 10)
-        _widget.info_top.addRow('应用名称：', CustomLabel(), index='app_label_name')
+        _widget.info_top.layout.setContentsMargins(0, 10, 0, 10)
+        _widget.info_top.layout.setSpacing(10)
+        _widget.info_top.addRow('应用名称：', CustomComboBox(), index='app_label_name')
         _widget.info_top.addRow('应用包名：', CustomLabel(), index='app_package_name')
         _widget.info_top.addRow('主Activity：', CustomLabel(), index='app_main_activity')
 
@@ -186,9 +187,10 @@ class MainUI(QtWidgets.QMainWindow):
         info_button_layout.addWidget(info_left_widget)
         info_button_layout.addWidget(info_right_widget)
         info_button_layout.setContentsMargins(0, 0, 0, 0)
-        info_button_layout.setSpacing(0)
+        info_button_layout.setSpacing(5)
 
         _widget.info_left = CustomFormLayout(parent=info_left_widget)
+        _widget.info_left.layout.setSpacing(5)
         _widget.info_right = CustomFormLayout(parent=info_right_widget)
 
         _widget.info_left.addRow('版本号：', CustomLabel(), index='app_version_id')

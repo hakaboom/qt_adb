@@ -58,52 +58,14 @@ class BaseControl(QWidget):
         self.layout.addSpacerItem(spacerItem)
 
 
-class ComboBoxWithButton(QWidget):
-    """
-        Activated	当用户选中一个下拉选项时发射该信号
-        currentIndexChanged	当下拉选项的索引发生改变时发射该信号
-        highlighted	当选中一个已经选中的下拉选项时，发射该信号
-
-    """
-
-    def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, btn_text: str = None,
-                 parent: QWidget = None):
-        super(ComboBoxWithButton, self).__init__(parent=parent)
+class CustomComboBox(QWidget):
+    def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, parent=None):
+        super(CustomComboBox, self).__init__(parent=parent)
 
         self.comboBox = QComboBox(parent=self)
-        self.btn = CustomButton(text=btn_text, parent=self)
-        self.addItem(item)
-
-        self.comboBox.setProperty('name', 'ComboBoxWithButton_comboBox')
-        self.btn.setProperty('name', 'ComboBoxWithButton_btn')
-
         self._layout = QHBoxLayout(parent)
-
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.comboBox)
-        self.layout.addWidget(self.btn)
-
-        self.setStretch(0, 6)
-        self.setStretch(0, 1)
-
-    @property
-    def layout(self):
-        return self._layout
-
-    def setStretch(self, index: int, stretch: int):
-        self.layout.setStretch(index, stretch)
-
-    def addItem(self, item: Union[str, list]):
-        """ 向comboBox中添加item"""
-        if isinstance(item, str):
-            self.comboBox.addItem(item)
-        elif isinstance(item, list):
-            self.comboBox.addItems(item)
-
-    def setEnabled(self, flag: bool):
-        """ 设置按钮和下拉框是否可以点击 """
-        self.btn.setEnabled(flag)
-        self.comboBox.setEnabled(flag)
+        self.addItem(item)
 
     def getItemsText(self) -> List[str]:
         ret = []
@@ -128,6 +90,48 @@ class ComboBoxWithButton(QWidget):
     @property
     def activated(self):
         return self.comboBox.activated
+
+    @property
+    def layout(self):
+        return self._layout
+
+    def setStretch(self, index: int, stretch: int):
+        self.layout.setStretch(index, stretch)
+
+    def addItem(self, item: Union[str, list]):
+        """ 向comboBox中添加item"""
+        if isinstance(item, str):
+            self.comboBox.addItem(item)
+        elif isinstance(item, list):
+            self.comboBox.addItems(item)
+
+
+class ComboBoxWithButton(CustomComboBox):
+    """
+        Activated	当用户选中一个下拉选项时发射该信号
+        currentIndexChanged	当下拉选项的索引发生改变时发射该信号
+        highlighted	当选中一个已经选中的下拉选项时，发射该信号
+
+    """
+    def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, btn_text: str = None,
+                 parent: QWidget = None):
+        super(ComboBoxWithButton, self).__init__(item=item, parent=parent)
+
+        self.btn = CustomButton(text=btn_text, parent=self)
+
+        self.comboBox.setProperty('name', 'ComboBoxWithButton_comboBox')
+        self.btn.setProperty('name', 'ComboBoxWithButton_btn')
+
+        self.layout.addWidget(self.comboBox)
+        self.layout.addWidget(self.btn)
+
+        self.setStretch(0, 6)
+        self.setStretch(0, 1)
+
+    def setEnabled(self, flag: bool):
+        """ 设置按钮和下拉框是否可以点击 """
+        self.btn.setEnabled(flag)
+        self.comboBox.setEnabled(flag)
 
 
 class CustomFormLayout(QWidget):

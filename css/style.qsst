@@ -440,23 +440,12 @@ QComboBox {
 	background: #FFFFFF;
 	selection-background-color: #8BF;
 	border: 1px solid #999999;
-	border-radius:3px;
+	border-radius:4px;
 }
-
 QComboBox::down-arrow{
-	min-height:30px;
-	min-width:20px;
-	background: #FFFFFF;
-	image: url(./icon/Dropdown.png);
-	margin: 5px;
+	margin: 1px;
 }
-
-QComboBox::drop-down{
-	min-width:30px;
-
-	border: none; 
-}    
-
+ 
 QComboBox QAbstractItemView {
     outline: 0px solid gray;   /* 选定项的虚框 */
     border: 0px solid yellow;   /* 整个下拉窗体的边框 */
@@ -510,7 +499,6 @@ QWidget[name="baseControl_widget"]{
 	 background-color: $baseControl_widget_bd;
 	 border: 1px;
 	 border-radius: 3px;
-	 padding: 20px;
 }
 QWidget[name="baseControl_widget"] > .QWidget{
 	 background-color: $baseControl_widget_bd;
