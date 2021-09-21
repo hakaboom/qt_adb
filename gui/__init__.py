@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QSize, QPoint, QRect
 from PyQt5.QtGui import QFont, QPixmap
@@ -109,20 +108,20 @@ class MainUI(QtWidgets.QMainWindow):
 
     @staticmethod
     def _create_device_info_widget(parent: QWidget):
-        groupBox = CustomFormLayout(parent=parent)
-        groupBox.layout.setVerticalSpacing(15)
-
+        _layout = CustomFormLayout(parent=parent)
+        _layout.setVerticalSpacing(15)
+        _layout.setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         loading_tips = '读取中...'
 
-        groupBox.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
-        groupBox.addRow('手机型号:', CustomLabel(loading_tips), index='model')
-        groupBox.addRow('手机厂商:', CustomLabel(loading_tips), index='manufacturer')
-        groupBox.addRow('内存容量:', CustomLabel(loading_tips), index='memory')
-        groupBox.addRow('分辨率:', CustomLabel(loading_tips), index='displaySize')
-        groupBox.addRow('安卓版本:', CustomLabel(loading_tips), index='android_version')
-        groupBox.addRow('SDK版本:', CustomLabel(loading_tips), index='sdk_version')
+        _layout.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
+        _layout.addRow('手机型号:', CustomLabel(loading_tips), index='model')
+        _layout.addRow('手机厂商:', CustomLabel(loading_tips), index='manufacturer')
+        _layout.addRow('内存容量:', CustomLabel(loading_tips), index='memory')
+        _layout.addRow('分辨率:', CustomLabel(loading_tips), index='displaySize')
+        _layout.addRow('安卓版本:', CustomLabel(loading_tips), index='android_version')
+        _layout.addRow('SDK版本:', CustomLabel(loading_tips), index='sdk_version')
 
-        return groupBox
+        return _layout
 
     @staticmethod
     def _create_device_app_manage_widget(parent: QWidget) -> type_device_app_manage_widget:
@@ -172,9 +171,11 @@ class MainUI(QtWidgets.QMainWindow):
 
         loading_tips = '读取中...'
         # info_top中摆放一些字段较长的类
-        _widget.info_top = CustomFormLayout(parent=info_top_widget)
-        _widget.info_top.layout.setContentsMargins(0, 10, 0, 10)
-        _widget.info_top.layout.setSpacing(10)
+        _widget.info_top = CustomFormLayout(parent=info_top_widget)\
+            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _widget.info_top.setContentsMargins(0, 10, 0, 10)
+        _widget.info_top.setSpacing(10)
+
         _widget.info_top.addRow('应用名称：', CustomComboBox(), index='app_label_name')
         _widget.info_top.addRow('应用包名：', CustomLabel(), index='app_package_name')
         _widget.info_top.addRow('主Activity：', CustomLabel(), index='app_main_activity')
@@ -189,9 +190,10 @@ class MainUI(QtWidgets.QMainWindow):
         info_button_layout.setContentsMargins(0, 0, 0, 0)
         info_button_layout.setSpacing(5)
 
-        _widget.info_left = CustomFormLayout(parent=info_left_widget)
-        _widget.info_left.layout.setSpacing(5)
-        _widget.info_right = CustomFormLayout(parent=info_right_widget)
+        _widget.info_left = CustomFormLayout(parent=info_left_widget)\
+            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _widget.info_right = CustomFormLayout(parent=info_right_widget)\
+            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
         _widget.info_left.addRow('版本号：', CustomLabel(), index='app_version_id')
         _widget.info_left.addRow('版本名：', CustomLabel(), index='app_version_name')

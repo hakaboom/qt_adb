@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from baseImage import IMAGE
 from loguru import logger
 
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Type
 from functools import wraps
 
 
@@ -134,20 +134,18 @@ class ComboBoxWithButton(CustomComboBox):
         self.comboBox.setEnabled(flag)
 
 
-class CustomFormLayout(QWidget):
+class CustomFormLayout(QFormLayout):
     def __init__(self, parent=None):
-        super(CustomFormLayout, self).__init__(parent=parent)
-
-        self._layout = QFormLayout(parent)
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        super(CustomFormLayout, self).__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
         self.rows = {}
 
-    @property
-    def layout(self):
-        return self._layout
+    def setFormAlignment(self, flag):
+        super(CustomFormLayout, self).setFormAlignment(flag)
+        return self
 
     def addRow(self, label: str, field: QWidget = None, index: str = None):
-        self.layout.addRow(label, field)
+        super(CustomFormLayout, self).addRow(label, field)
         self.rows[index or label] = field
 
     def getField(self, index: str):
@@ -158,20 +156,15 @@ class CustomFormLayout(QWidget):
             self.rows[title].setText(str(value))
 
 
-class CustomGridLayout(QWidget):
+class CustomGridLayout(QGridLayout):
     def __init__(self, parent=None):
-        super(CustomGridLayout, self).__init__(parent=parent)
-
-        self._layout = QGridLayout(parent)
+        super(CustomGridLayout, self).__init__(parent)
         self.rows = {}
 
-    @property
-    def layout(self):
-        return self._layout
-
-    def addWidget(self, w: QWidget, row: int, column: int, rowSpan: int = 1, columnSpan: int = 1,
-                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = Qt.Alignment(), index: str = None):
-        self.layout.addWidget(w, row, column, rowSpan, columnSpan, alignment)
+    def addWidget(self, w: Type[QWidget], row: int, column: int, rowSpan: int = 1, columnSpan: int = 1,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = Qt.Alignment(),
+                  index: str = None):
+        super(CustomGridLayout, self).addWidget(w, row, column, rowSpan, columnSpan, alignment)
         self.rows[index or str(w)] = w
 
     def getField(self, index: Union[str, QWidget]):
