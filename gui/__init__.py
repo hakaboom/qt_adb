@@ -110,7 +110,6 @@ class MainUI(QtWidgets.QMainWindow):
     def _create_device_info_widget(parent: QWidget):
         _layout = CustomFormLayout(parent=parent)
         _layout.setVerticalSpacing(15)
-        _layout.setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         loading_tips = '读取中...'
 
         _layout.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
@@ -171,12 +170,13 @@ class MainUI(QtWidgets.QMainWindow):
 
         loading_tips = '读取中...'
         # info_top中摆放一些字段较长的类
-        _widget.info_top = CustomFormLayout(parent=info_top_widget)\
-            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _widget.info_top = CustomFormLayout(parent=info_top_widget)
+        _widget.info_top.setRowWrapPolicy(QFormLayout.WrapLongRows)
+        # _widget.info_top.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         _widget.info_top.setContentsMargins(0, 10, 0, 10)
         _widget.info_top.setSpacing(10)
 
-        _widget.info_top.addRow('应用名称：', CustomComboBox(), index='app_label_name')
+        _widget.info_top.addRow('应用名称：', CustomLabel(), index='app_label_name')
         _widget.info_top.addRow('应用包名：', CustomLabel(), index='app_package_name')
         _widget.info_top.addRow('主Activity：', CustomLabel(), index='app_main_activity')
 
@@ -190,10 +190,8 @@ class MainUI(QtWidgets.QMainWindow):
         info_button_layout.setContentsMargins(0, 0, 0, 0)
         info_button_layout.setSpacing(5)
 
-        _widget.info_left = CustomFormLayout(parent=info_left_widget)\
-            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        _widget.info_right = CustomFormLayout(parent=info_right_widget)\
-            .setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _widget.info_left = CustomFormLayout(parent=info_left_widget)
+        _widget.info_right = CustomFormLayout(parent=info_right_widget)
 
         _widget.info_left.addRow('版本号：', CustomLabel(), index='app_version_id')
         _widget.info_left.addRow('版本名：', CustomLabel(), index='app_version_name')

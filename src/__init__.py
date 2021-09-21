@@ -138,6 +138,8 @@ class CustomFormLayout(QFormLayout):
     def __init__(self, parent=None):
         super(CustomFormLayout, self).__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.setLabelAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.rows = {}
 
     def setFormAlignment(self, flag):
