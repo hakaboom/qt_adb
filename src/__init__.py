@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 from baseImage import IMAGE
 from loguru import logger
 
+from src.layout.BaseLayout import CustomGridLayout, CustomFormLayout, CustomHBoxLayout, CustomVBoxLayout
 from typing import Union, Tuple, List, Type
 from functools import wraps
 
@@ -58,52 +59,27 @@ class BaseControl(QWidget):
         self.layout.addSpacerItem(spacerItem)
 
 
-class CustomComboBox(QWidget):
+class CustomComboBox(QComboBox):
     def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, parent=None):
         super(CustomComboBox, self).__init__(parent=parent)
-
-        self.comboBox = QComboBox(parent=self)
-        self._layout = QHBoxLayout(parent)
-        self.layout.setContentsMargins(0, 0, 0, 0)
         self.addItem(item)
+
+    def addItem(self, item: Union[str, List[str], Tuple[str, ...]]) -> None:
+        if isinstance(item, str):
+            self.addItem(item)
+        elif isinstance(item, list):
+            self.addItems(item)
 
     def getItemsText(self) -> List[str]:
         ret = []
-        for index in range(self.comboBox.count()):
-            ret.append(self.comboBox.itemText(index))
+        for index in range(self.count()):
+            ret.append(self.itemText(index))
 
         return ret
-
-    def currentText(self):
-        return self.comboBox.currentText()
-
-    def currentIndex(self):
-        return self.comboBox.currentIndex()
-
-    def clear(self):
-        self.comboBox.clear()
-
-    @property
-    def currentIndexChanged(self):
-        return self.comboBox.currentIndexChanged
-
-    @property
-    def activated(self):
-        return self.comboBox.activated
 
     @property
     def layout(self):
         return self._layout
-
-    def setStretch(self, index: int, stretch: int):
-        self.layout.setStretch(index, stretch)
-
-    def addItem(self, item: Union[str, list]):
-        """ 向comboBox中添加item"""
-        if isinstance(item, str):
-            self.comboBox.addItem(item)
-        elif isinstance(item, list):
-            self.comboBox.addItems(item)
 
 
 class ComboBoxWithButton(CustomComboBox):
@@ -118,88 +94,25 @@ class ComboBoxWithButton(CustomComboBox):
         super(ComboBoxWithButton, self).__init__(item=item, parent=parent)
 
         self.btn = CustomButton(text=btn_text, parent=self)
+        self._layout = QHBoxLayout(parent)
 
-        self.comboBox.setProperty('name', 'ComboBoxWithButton_comboBox')
+        self.setProperty('name', 'ComboBoxWithButton_comboBox')
         self.btn.setProperty('name', 'ComboBoxWithButton_btn')
 
-        self.layout.addWidget(self.comboBox)
+        self.layout.addWidget(self)
         self.layout.addWidget(self.btn)
 
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setStretch(0, 6)
         self.setStretch(0, 1)
+
+    def setStretch(self, index: int, stretch: int):
+        self.layout.setStretch(index, stretch)
 
     def setEnabled(self, flag: bool):
         """ 设置按钮和下拉框是否可以点击 """
         self.btn.setEnabled(flag)
-        self.comboBox.setEnabled(flag)
-
-
-class CustomFormLayout(QFormLayout):
-    def __init__(self, parent=None):
-        super(CustomFormLayout, self).__init__(parent)
-        self.setContentsMargins(0, 0, 0, 0)
-        self.setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        self.setLabelAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.rows = {}
-
-    def setFormAlignment(self, flag):
-        super(CustomFormLayout, self).setFormAlignment(flag)
-        return self
-
-    def addRow(self, label: str, field: QWidget = None, index: str = None):
-        super(CustomFormLayout, self).addRow(label, field)
-        self.rows[index or label] = field
-
-    def getField(self, index: str):
-        return self.rows.get(index)
-
-    def update_label(self, title, value):
-        if self.rows.get(title):
-            self.rows[title].setText(str(value))
-
-
-class CustomGridLayout(QGridLayout):
-    def __init__(self, parent=None):
-        super(CustomGridLayout, self).__init__(parent)
-        self.rows = {}
-
-    def addWidget(self, w: Type[QWidget], row: int, column: int, rowSpan: int = 1, columnSpan: int = 1,
-                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = Qt.Alignment(),
-                  index: str = None):
-        super(CustomGridLayout, self).addWidget(w, row, column, rowSpan, columnSpan, alignment)
-        self.rows[index or str(w)] = w
-
-    def getField(self, index: Union[str, QWidget]):
-        if field := self.rows.get(str(index)):
-            return field
-        else:
-            logger.warning(f'未能在找到index:{str(index)}')
-
-
-class FormLayoutWidget(QWidget):
-    def __init__(self, parent=None):
-        super(FormLayoutWidget, self).__init__(parent)
-        self.setLayout(CustomFormLayout(parent=self))
-        self.rows = {}
-
-    @property
-    def layout(self) -> CustomFormLayout:
-        return super(FormLayoutWidget, self).layout()
-
-    def setFormAlignment(self, flag):
-        self.layout.setFormAlignment(flag)
-        return self
-
-    def addRow(self, label: str, field: QWidget = None, index: str = None):
-        self.layout.addRow(label, field)
-        self.rows[index or label] = field
-
-    def getField(self, index: str):
-        return self.rows.get(index)
-
-    def update_label(self, title, value):
-        if self.rows.get(title):
-            self.rows[title].setText(str(value))
+        super(ComboBoxWithButton, self).setEnabled(flag)
 
 
 class CustomLabel(QLabel):

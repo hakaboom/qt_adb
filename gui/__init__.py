@@ -11,8 +11,9 @@ from baseImage import IMAGE
 from loguru import logger
 from css.constant import QSSLoader
 
-from src import (BaseControl, ComboBoxWithButton, CustomFormLayout, CustomLabel, CustomGridLayout, CustomButton,
-                 CustomComboBox, FormLayoutWidget)
+from src import (BaseControl, ComboBoxWithButton, CustomLabel, CustomButton, CustomComboBox)
+from src.layout.BaseLayout import CustomFormLayout, CustomGridLayout
+from src.layout.widget import FormLayoutWidget
 from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
 from gui.thread import Thread, LoopThread
 from gui.type_hint import type_device_app_manage_widget
@@ -101,7 +102,7 @@ class MainUI(QtWidgets.QMainWindow):
     @staticmethod
     def _create_device_chose_widget(parent: QWidget):
         widget = ComboBoxWithButton(parent=parent, btn_text='刷新设备')
-        widget.comboBox.setMinimumHeight(30)
+        widget.setMinimumHeight(30)
         widget.btn.setMinimumHeight(30)
         widget.btn.setToolTip('点击后刷新设备列表')
         return widget
@@ -110,8 +111,8 @@ class MainUI(QtWidgets.QMainWindow):
     def _create_device_info_widget(parent: QWidget):
         _layout = CustomFormLayout(parent=parent)
         _layout.setVerticalSpacing(15)
-        loading_tips = '读取中...'
 
+        loading_tips = '读取中...'
         _layout.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
         _layout.addRow('手机型号:', CustomLabel(loading_tips), index='model')
         _layout.addRow('手机厂商:', CustomLabel(loading_tips), index='manufacturer')
@@ -175,7 +176,7 @@ class MainUI(QtWidgets.QMainWindow):
         _widget.info_top.setContentsMargins(0, 10, 0, 10)
         _widget.info_top.setSpacing(10)
 
-        _widget.info_top.addRow('应用名称：', CustomLabel(), index='app_label_name')
+        _widget.info_top.addRow('应用名称：', CustomComboBox(item=['122', '1231']), index='app_label_name')
         _widget.info_top.addRow('应用包名：', CustomLabel(), index='app_package_name')
         _widget.info_top.addRow('主Activity：', CustomLabel(), index='app_main_activity')
 
@@ -258,9 +259,7 @@ class MainUI(QtWidgets.QMainWindow):
         def callback(adb: ADBClient, cls):
             def fun():
                 logger.debug('刷新设备')
-                # cls.device_chose_widget.setEnabled(False)
                 cls.enabledManager.all_unavailable()
-
                 current_device = cls.device_chose_widget.currentText()
                 # step1: 清除所有item
                 cls.device_chose_widget.clear()
@@ -289,7 +288,6 @@ class MainUI(QtWidgets.QMainWindow):
 
     def _set_foreground_app_callback(self):
         btn: CustomButton = self.device_app_manage_widget.tools.getField('foreground_app')
-
         def callback(cls):
             @self.freeze(index=['start_app', 'stop_app', 'clear_app', 'uninstall_app', 'foreground_app', 'logcat_app', 'save_apk'])
             def fun():
