@@ -12,7 +12,7 @@ from loguru import logger
 from css.constant import QSSLoader
 
 from src import (BaseControl, ComboBoxWithButton, CustomFormLayout, CustomLabel, CustomGridLayout, CustomButton,
-                 CustomComboBox)
+                 CustomComboBox, FormLayoutWidget)
 from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
 from gui.thread import Thread, LoopThread
 from gui.type_hint import type_device_app_manage_widget
@@ -133,8 +133,8 @@ class MainUI(QtWidgets.QMainWindow):
         icon_widget = QWidget(parent, objectName='apk_icon_widget')
         icon_layout = QHBoxLayout(icon_widget)
 
-        _widget.icon = CustomLabel(parent=icon_widget). \
-            setMinimumHeight(APK_ICON_HEIGHT).setMinimumWidth(APK_ICON_WIDTH). \
+        _widget.icon = CustomLabel(parent=icon_widget).\
+            setMinimumHeight(APK_ICON_HEIGHT).setMinimumWidth(APK_ICON_WIDTH).\
             setMaximumHeight(APK_ICON_HEIGHT).setMaximumWidth(APK_ICON_WIDTH)
 
         _widget.icon.setProperty('name', 'apk_icon_widget')
@@ -172,7 +172,6 @@ class MainUI(QtWidgets.QMainWindow):
         # info_top中摆放一些字段较长的类
         _widget.info_top = CustomFormLayout(parent=info_top_widget)
         _widget.info_top.setRowWrapPolicy(QFormLayout.WrapLongRows)
-        # _widget.info_top.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         _widget.info_top.setContentsMargins(0, 10, 0, 10)
         _widget.info_top.setSpacing(10)
 
@@ -183,15 +182,11 @@ class MainUI(QtWidgets.QMainWindow):
         # 左右各一个控件,摆放一些普通字段
         info_button_layout = QHBoxLayout(info_button_widget)
 
-        info_left_widget = QWidget(info_button_widget, objectName='apk_info_left')
-        info_right_widget = QWidget(info_button_widget, objectName='apk_info_right')
-        info_button_layout.addWidget(info_left_widget)
-        info_button_layout.addWidget(info_right_widget)
-        info_button_layout.setContentsMargins(0, 0, 0, 0)
-        info_button_layout.setSpacing(5)
+        _widget.info_left = FormLayoutWidget(parent=info_button_widget)
+        _widget.info_right = FormLayoutWidget(parent=info_button_widget)
 
-        _widget.info_left = CustomFormLayout(parent=info_left_widget)
-        _widget.info_right = CustomFormLayout(parent=info_right_widget)
+        info_button_layout.addWidget(_widget.info_left)
+        info_button_layout.addWidget(_widget.info_right)
 
         _widget.info_left.addRow('版本号：', CustomLabel(), index='app_version_id')
         _widget.info_left.addRow('版本名：', CustomLabel(), index='app_version_name')

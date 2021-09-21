@@ -176,6 +176,32 @@ class CustomGridLayout(QGridLayout):
             logger.warning(f'未能在找到index:{str(index)}')
 
 
+class FormLayoutWidget(QWidget):
+    def __init__(self, parent=None):
+        super(FormLayoutWidget, self).__init__(parent)
+        self.setLayout(CustomFormLayout(parent=self))
+        self.rows = {}
+
+    @property
+    def layout(self) -> CustomFormLayout:
+        return super(FormLayoutWidget, self).layout()
+
+    def setFormAlignment(self, flag):
+        self.layout.setFormAlignment(flag)
+        return self
+
+    def addRow(self, label: str, field: QWidget = None, index: str = None):
+        self.layout.addRow(label, field)
+        self.rows[index or label] = field
+
+    def getField(self, index: str):
+        return self.rows.get(index)
+
+    def update_label(self, title, value):
+        if self.rows.get(title):
+            self.rows[title].setText(str(value))
+
+
 class CustomLabel(QLabel):
     def __init__(self, title: Union[QPixmap, IMAGE, QImage, str] = None, parent=None, styleSheet=None):
         super(CustomLabel, self).__init__(parent=parent)
