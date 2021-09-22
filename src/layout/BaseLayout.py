@@ -15,6 +15,14 @@ class BaseLayout(QLayout):
     def getField(self, index: str):
         return self.rows.get(index)
 
+    def _addRow(self, index, field: QWidget):
+        if index:
+            self.rows[index] = field
+        elif field.objectName():
+            self.rows[field.objectName()] = field
+        else:
+            logger.warning(f'object:\'{self.parent().objectName()}\' 未设置索引')
+
 
 class CustomFormLayout(QFormLayout, BaseLayout):
     def __init__(self, parent=None):
@@ -24,10 +32,7 @@ class CustomFormLayout(QFormLayout, BaseLayout):
 
     def addRow(self, label: Union[str, QWidget] = None, field: QWidget = None, index: str = None) -> None:
         super(CustomFormLayout, self).addRow(label, field)
-        if index:
-            self.rows[index] = field
-        else:
-            logger.warning(f'label:\'{label}\' 未设置索引')
+        self._addRow(index=index, field=field)
 
 
 class CustomGridLayout(QGridLayout, BaseLayout):
@@ -38,23 +43,18 @@ class CustomGridLayout(QGridLayout, BaseLayout):
                   alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
                   index: str = None) -> None:
         super(CustomGridLayout, self).addWidget(w, row, column, rowSpan, columnSpan, alignment)
-        if index:
-            self.rows[index] = w
-        else:
-            logger.warning(f'label:\'{w}\' row:{row}, column:{column} 未设置索引')
+        self._addRow(index=index, field=w)
 
 
 class CustomVBoxLayout(QVBoxLayout, BaseLayout):
     def __init__(self, parent=None):
         super(CustomVBoxLayout, self).__init__(parent=parent)
 
-    def addWidget(self, a0: QWidget, stretch: int = ...,
-                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = ..., index: str = None) -> None:
+    def addWidget(self, a0: QWidget, stretch: int = 0,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
+                  index: str = None) -> None:
         super(CustomVBoxLayout, self).addWidget(a0, stretch, alignment)
-        if index:
-            self.rows[index] = a0
-        else:
-            logger.warning(f'widget:\'{a0}\' 未设置索引')
+        self._addRow(index=index, field=a0)
 
 
 class CustomHBoxLayout(QHBoxLayout, BaseLayout):
@@ -65,7 +65,4 @@ class CustomHBoxLayout(QHBoxLayout, BaseLayout):
                   alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
                   index: str = None) -> None:
         super(CustomHBoxLayout, self).addWidget(a0, stretch, alignment)
-        if index:
-            self.rows[index] = a0
-        else:
-            logger.warning(f'widget:\'{a0}\' 未设置索引')
+        self._addRow(index=index, field=a0)

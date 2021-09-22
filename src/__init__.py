@@ -7,42 +7,35 @@ from PyQt5.QtWidgets import *
 from baseImage import IMAGE
 from loguru import logger
 
+import src.layout.widget
 from src.layout.BaseLayout import CustomGridLayout, CustomFormLayout, CustomHBoxLayout, CustomVBoxLayout
+from src.layout.widget import GridLayoutWidget, FormLayoutWidget, HBoxLayoutWidget, VBoxLayoutWidget
 from typing import Union, Tuple, List, Type
 from functools import wraps
 
 
-class BaseControl(QWidget):
-    def __init__(self, title: str, objectName: str = None, parent=None):
-        """
-        基础模块控件
-        垂直布局,包含一个标题和一个QWidget
-
-        Args:
-            title: 标题文字
-            parent: 父控件
-        """
-        super(BaseControl, self).__init__(parent, objectName=objectName)
-
-        self.main_layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(0)
-
-        self._title = CustomLabel(title)
-        self._widget = QWidget(self)
-        self._widget.setContentsMargins(0, 0, 0, 0)
+class BaseControl(VBoxLayoutWidget):
+    def __init__(self, title: str, parent=None, objectName=None, widget_flag: int = None):
+        super(BaseControl, self).__init__(parent, objectName)
+        self._title = CustomLabel(title=title, parent=self)
+        if widget_flag == src.layout.widget.FormLayoutWidgetFlag:
+            self._widget = FormLayoutWidget(parent=self)
+        elif widget_flag == src.layout.widget.HBoxLayoutWidgetFlag:
+            self._widget = HBoxLayoutWidget(parent=self)
+        elif widget_flag == src.layout.widget.VBoxLayoutWidgetFlag:
+            self._widget = VBoxLayoutWidget(parent=self)
+        elif widget_flag == src.layout.widget.GridLayoutWidgetFlag:
+            self._widget = GridLayoutWidget(parent=self)
+        else:
+            self._widget = QWidget(self)
 
         self._title.setProperty('name', 'baseControl_title')
         self._widget.setProperty('name', 'baseControl_widget')
 
-        self.layout.addWidget(self.title)
-        self.layout.addWidget(self.widget)
+        self.addWidget(self._title)
+        self.addWidget(self._widget)
 
         self.title.setAlignment(QtCore.Qt.AlignCenter)
-
-    @property
-    def layout(self):
-        return self.main_layout
 
     @property
     def title(self):
@@ -51,12 +44,6 @@ class BaseControl(QWidget):
     @property
     def widget(self):
         return self._widget
-
-    def setStretch(self, index: int, stretch: int):
-        self.layout.setStretch(index, stretch)
-
-    def addSpacerItem(self, spacerItem: QSpacerItem):
-        self.layout.addSpacerItem(spacerItem)
 
 
 class CustomComboBox(QComboBox):
@@ -117,7 +104,7 @@ class ComboBoxWithButton(CustomComboBox):
 
 class CustomLabel(QLabel):
     def __init__(self, title: Union[QPixmap, IMAGE, QImage, str] = None, parent=None, styleSheet=None):
-        super(CustomLabel, self).__init__(parent=parent)
+        super(CustomLabel, self).__init__(parent)
         if isinstance(title, str):
             self.setText(title)
         elif isinstance(title, (QPixmap, IMAGE, QImage)):

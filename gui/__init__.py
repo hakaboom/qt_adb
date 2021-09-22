@@ -9,6 +9,8 @@ from adbutils.extra.apk import Apk
 from adbutils.exceptions import AdbBaseError, AdbInstallError, NoDeviceSpecifyError
 from baseImage import IMAGE
 from loguru import logger
+
+import src.layout.widget
 from css.constant import QSSLoader
 
 from src import (BaseControl, ComboBoxWithButton, CustomLabel, CustomButton, CustomComboBox)
@@ -37,8 +39,7 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.enabledManager = EnabledManager()
         # main_widget 布局: 水平布局
-        self.main_widget = QWidget(objectName='main_widget')
-        self.main_layout = QHBoxLayout(self.main_widget)
+        self.main_widget = HBoxLayoutWidget(parent=self, objectName='main_widget')
         self.setCentralWidget(self.main_widget)
         self.setWindowTitle("test")
 
@@ -46,25 +47,17 @@ class MainUI(QtWidgets.QMainWindow):
         self.function_bar = QWidget(objectName='function_bar')
 
         # 设备区域 布局: 水平布局
-        self.device_main = QWidget(objectName='device_main')
-        self.device_main_layout = QHBoxLayout(self.device_main)
+        self.device_main = HBoxLayoutWidget(parent=self.main_widget, objectName='device_main')
 
-        self.main_layout.addWidget(self.function_bar)
-        self.main_layout.addWidget(self.device_main)
-        self.main_layout.setStretch(0, 1)
-        self.main_layout.setStretch(1, 9)
+        self.main_widget.addWidget(self.function_bar, stretch=1)
+        self.main_widget.addWidget(self.device_main, stretch=9)
 
         # 设备区域控件 布局: 垂直布局
-        self.device_config_widget = QWidget(objectName='device_config')
-        self.device_tool_widget = QWidget(objectName='device_tool')
+        self.device_config_widget = VBoxLayoutWidget(parent=self.device_main, objectName='device_config')
+        self.device_tool_widget = VBoxLayoutWidget(parent=self.device_main, objectName='device_tool')
 
-        self.device_main_layout.addWidget(self.device_config_widget)
-        self.device_main_layout.addWidget(self.device_tool_widget)
-        self.device_main_layout.setSpacing(0)
-        self.device_main_layout.setStretch(0, 3)
-        self.device_main_layout.setStretch(1, 8)
-
-        self.device_config_layout = QVBoxLayout(self.device_config_widget)
+        self.device_main.addWidget(self.device_config_widget, 3)
+        self.device_main.addWidget(self.device_tool_widget, 8)
 
         # 设备选择控件 布局: 垂直布局----------------------------------------------------------------------------------------
         self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
@@ -73,18 +66,18 @@ class MainUI(QtWidgets.QMainWindow):
         self._set_device_chose_callback()
 
         # 设备信息控件 布局：垂直布局----------------------------------------------------------------------------------------
-        self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control')
+        self.device_info_control = BaseControl(title='设备信息', objectName='device_info_control',
+                                               widget_flag=src.layout.widget.FormLayoutWidgetFlag)
         self.device_info_widget = self._create_device_info_widget(parent=self.device_info_control.widget)
         self._set_device_info_callback()
 
-        self.device_config_layout.addWidget(self.device_chose_control)
-        self.device_config_layout.addWidget(self.device_info_control)
-        self.device_config_layout.setSpacing(10)
-        self.device_config_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.device_config_widget.addWidget(self.device_chose_control)
+        self.device_config_widget.addWidget(self.device_info_control)
+        self.device_config_widget.layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # 应用管理-------------------------------------------------------------------------------------------------------
-        self.device_tool_layout = QVBoxLayout(self.device_tool_widget)
-        self.device_app_control = BaseControl(title='应用管理', objectName='device_app_control')
+        self.device_app_control = BaseControl(title='应用管理', objectName='device_app_control',
+                                              widget_flag=src.layout.widget.VBoxLayoutWidgetFlag)
         self.device_app_manage_widget = self._create_device_app_manage_widget(parent=self.device_app_control.widget)
         self._set_app_manage_tools_callback()
 
@@ -97,8 +90,8 @@ class MainUI(QtWidgets.QMainWindow):
         self.enabledManager.addWidget(tools_widget.getField('uninstall_app'), index='uninstall_app')
         self.enabledManager.addWidget(tools_widget.getField('save_apk'), index='save_apk')
 
-        self.device_tool_layout.addWidget(self.device_app_control)
-        self.device_tool_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.device_tool_widget.addWidget(self.device_app_control)
+        self.device_tool_widget.layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     @staticmethod
     def _create_device_chose_widget(parent: QWidget):
@@ -109,26 +102,23 @@ class MainUI(QtWidgets.QMainWindow):
         return widget
 
     @staticmethod
-    def _create_device_info_widget(parent: QWidget):
-        _layout = CustomFormLayout(parent=parent)
-        _layout.setVerticalSpacing(15)
-
+    def _create_device_info_widget(parent: FormLayoutWidget):
+        parent.layout.setVerticalSpacing(15)
         loading_tips = '读取中...'
-        _layout.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
-        _layout.addRow('手机型号:', CustomLabel(loading_tips), index='model')
-        _layout.addRow('手机厂商:', CustomLabel(loading_tips), index='manufacturer')
-        _layout.addRow('内存容量:', CustomLabel(loading_tips), index='memory')
-        _layout.addRow('分辨率:', CustomLabel(loading_tips), index='displaySize')
-        _layout.addRow('安卓版本:', CustomLabel(loading_tips), index='android_version')
-        _layout.addRow('SDK版本:', CustomLabel(loading_tips), index='sdk_version')
+        parent.addRow('设备标识:', CustomLabel(loading_tips), index='serialno')
+        parent.addRow('手机型号:', CustomLabel(loading_tips), index='model')
+        parent.addRow('手机厂商:', CustomLabel(loading_tips), index='manufacturer')
+        parent.addRow('内存容量:', CustomLabel(loading_tips), index='memory')
+        parent.addRow('分辨率:', CustomLabel(loading_tips), index='displaySize')
+        parent.addRow('安卓版本:', CustomLabel(loading_tips), index='android_version')
+        parent.addRow('SDK版本:', CustomLabel(loading_tips), index='sdk_version')
 
-        return _layout
+        return parent
 
     @staticmethod
-    def _create_device_app_manage_widget(parent: QWidget) -> type_device_app_manage_widget:
-        _layout = QVBoxLayout(parent)
-        _layout.setContentsMargins(0, 0, 0, 0)
-        _layout.setSpacing(0)
+    def _create_device_app_manage_widget(parent: VBoxLayoutWidget) -> type_device_app_manage_widget:
+        parent.setContentsMargins(0, 0, 0, 0)
+        parent.layout.setSpacing(0)
 
         _widget = type_device_app_manage_widget()
         # icon控件
@@ -151,47 +141,42 @@ class MainUI(QtWidgets.QMainWindow):
 
         icon_widget.addWidget(_widget.icon, 1)
         icon_widget.addWidget(_widget.tools, 4)
-        icon_widget.layout.setSpacing(0)
+        icon_widget.layout.setContentsMargins(6, 6, 6, 6)
 
         # info控件
-        icon_widget = VBoxLayoutWidget(parent=parent, objectName='apk_info_widget')
-        info_widget = QWidget(parent, objectName='apk_info_widget')
-        info_main_layout = QVBoxLayout(info_widget)
+        info_widget = VBoxLayoutWidget(parent=parent, objectName='apk_info_widget')
 
-        info_button_widget = QWidget(info_widget, objectName='apk_info_button')
-        info_top_widget = QWidget(info_widget, objectName='apk_top_widget')
-        info_main_layout.addWidget(info_top_widget)
-        info_main_layout.addWidget(info_button_widget)
-        info_main_layout.setContentsMargins(0, 0, 0, 0)
-        info_main_layout.setSpacing(0)
+        info_button_widget = HBoxLayoutWidget(parent=info_widget, objectName='apk_info_button')
+        info_top_widget = FormLayoutWidget(parent=info_widget, objectName='apk_top_widget')
+        info_widget.addWidget(info_top_widget)
+        info_widget.addWidget(info_button_widget)
+        info_widget.layout.setContentsMargins(0, 0, 0, 0)
+        info_widget.layout.setSpacing(0)
 
         loading_tips = '读取中...'
         # info_top中摆放一些字段较长的类
-        _widget.info_top = CustomFormLayout(parent=info_top_widget)
-        _widget.info_top.setRowWrapPolicy(QFormLayout.WrapLongRows)
-        _widget.info_top.setContentsMargins(0, 10, 0, 10)
-        _widget.info_top.setSpacing(10)
-
-        _widget.info_top.addRow('应用名称：', CustomComboBox(item=['122', '1231']), index='app_label_name')
-        _widget.info_top.addRow('应用包名：', CustomLabel(), index='app_package_name')
-        _widget.info_top.addRow('主Activity：', CustomLabel(), index='app_main_activity')
+        _widget.info_top = info_top_widget
+        info_top_widget.addRow('应用名称：', CustomLabel(), index='app_label_name')
+        info_top_widget.addRow('应用包名：', CustomLabel(), index='app_package_name')
+        info_top_widget.addRow('主Activity：', CustomLabel(), index='app_main_activity')
+        info_top_widget.layout.setRowWrapPolicy(QFormLayout.WrapLongRows)
+        info_top_widget.layout.setContentsMargins(0, 10, 0, 10)
+        info_top_widget.layout.setSpacing(10)
 
         # 左右各一个控件,摆放一些普通字段
-        info_button_layout = QHBoxLayout(info_button_widget)
 
         _widget.info_left = FormLayoutWidget(parent=info_button_widget)
         _widget.info_right = FormLayoutWidget(parent=info_button_widget)
-
-        info_button_layout.addWidget(_widget.info_left)
-        info_button_layout.addWidget(_widget.info_right)
+        info_button_widget.addWidget(_widget.info_left)
+        info_button_widget.addWidget(_widget.info_right)
 
         _widget.info_left.addRow('版本号：', CustomLabel(), index='app_version_id')
         _widget.info_left.addRow('版本名：', CustomLabel(), index='app_version_name')
 
         _widget.info_right.addRow('包大小：', CustomLabel(), index='package_size')
 
-        _layout.addWidget(icon_widget)
-        _layout.addWidget(info_widget)
+        parent.addWidget(icon_widget)
+        parent.addWidget(info_widget)
 
         return _widget
 

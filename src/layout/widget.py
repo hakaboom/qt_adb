@@ -62,8 +62,9 @@ class VBoxLayoutWidget(BaseObject):
     def layout(self) -> CustomVBoxLayout:
         return super(BaseObject, self).layout()
 
-    def addWidget(self, a0: QWidget, stretch: int = ...,
-                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = ..., index: str = None) -> None:
+    def addWidget(self, a0: QWidget, stretch: int = 0,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
+                  index: str = None) -> None:
         self.layout.addWidget(a0, stretch, alignment, index)
 
 
@@ -80,3 +81,9 @@ class HBoxLayoutWidget(BaseObject):
                   alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
                   index: str = None) -> None:
         self.layout.addWidget(a0, stretch, alignment, index)
+
+
+VBoxLayoutWidgetFlag = 1
+HBoxLayoutWidgetFlag = 2
+FormLayoutWidgetFlag = 3
+GridLayoutWidgetFlag = 4
