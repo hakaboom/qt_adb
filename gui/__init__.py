@@ -13,6 +13,7 @@ from css.constant import QSSLoader
 
 from src import (BaseControl, ComboBoxWithButton, CustomLabel, CustomButton, CustomComboBox)
 from src.layout.BaseLayout import CustomFormLayout, CustomGridLayout
+from src.layout.widget import FormLayoutWidget, GridLayoutWidget, VBoxLayoutWidget, HBoxLayoutWidget
 from src.layout.widget import FormLayoutWidget
 from css.constant import APK_ICON_HEIGHT, APK_ICON_WIDTH
 from gui.thread import Thread, LoopThread
@@ -131,17 +132,14 @@ class MainUI(QtWidgets.QMainWindow):
 
         _widget = type_device_app_manage_widget()
         # icon控件
-        icon_widget = QWidget(parent, objectName='apk_icon_widget')
-        icon_layout = QHBoxLayout(icon_widget)
+        icon_widget = HBoxLayoutWidget(parent)
 
         _widget.icon = CustomLabel(parent=icon_widget).\
             setMinimumHeight(APK_ICON_HEIGHT).setMinimumWidth(APK_ICON_WIDTH).\
             setMaximumHeight(APK_ICON_HEIGHT).setMaximumWidth(APK_ICON_WIDTH)
-
         _widget.icon.setProperty('name', 'apk_icon_widget')
 
-        tools_widget = QWidget(parent=icon_widget)
-        _widget.tools = CustomGridLayout(parent=tools_widget)
+        _widget.tools = GridLayoutWidget(parent=icon_widget)
 
         _widget.tools.addWidget(CustomButton(text='启动').setMinimumHeight(30), 0, 0, index='start_app')
         _widget.tools.addWidget(CustomButton(text='停止').setMinimumHeight(30), 0, 1, index='stop_app')
@@ -151,14 +149,12 @@ class MainUI(QtWidgets.QMainWindow):
         _widget.tools.addWidget(CustomButton(text='切换到当前APP').setMinimumHeight(30), 1, 1, index='foreground_app')
         _widget.tools.addWidget(CustomButton(text='备份Apk').setMinimumHeight(30), 1, 2, index='save_apk')
 
-        icon_layout.addWidget(_widget.icon)
-        icon_layout.addWidget(tools_widget)
-        icon_layout.setStretch(0, 1)
-        icon_layout.setStretch(1, 4)
-        icon_layout.setContentsMargins(0, 0, 0, 0)
-        icon_layout.setSpacing(0)
+        icon_widget.addWidget(_widget.icon, 1)
+        icon_widget.addWidget(_widget.tools, 4)
+        icon_widget.layout.setSpacing(0)
 
         # info控件
+        icon_widget = VBoxLayoutWidget(parent=parent, objectName='apk_info_widget')
         info_widget = QWidget(parent, objectName='apk_info_widget')
         info_main_layout = QVBoxLayout(info_widget)
 

@@ -48,7 +48,24 @@ class CustomVBoxLayout(QVBoxLayout, BaseLayout):
     def __init__(self, parent=None):
         super(CustomVBoxLayout, self).__init__(parent=parent)
 
+    def addWidget(self, a0: QWidget, stretch: int = ...,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = ..., index: str = None) -> None:
+        super(CustomVBoxLayout, self).addWidget(a0, stretch, alignment)
+        if index:
+            self.rows[index] = a0
+        else:
+            logger.warning(f'widget:\'{a0}\' 未设置索引')
+
 
 class CustomHBoxLayout(QHBoxLayout, BaseLayout):
     def __init__(self, parent=None):
         super(CustomHBoxLayout, self).__init__(parent=parent)
+
+    def addWidget(self, a0: QWidget, stretch: int = 0,
+                  alignment: Union[QtCore.Qt.Alignment, QtCore.Qt.AlignmentFlag] = QtCore.Qt.Alignment(),
+                  index: str = None) -> None:
+        super(CustomHBoxLayout, self).addWidget(a0, stretch, alignment)
+        if index:
+            self.rows[index] = a0
+        else:
+            logger.warning(f'widget:\'{a0}\' 未设置索引')
