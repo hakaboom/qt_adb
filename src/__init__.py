@@ -53,9 +53,9 @@ class CustomComboBox(QComboBox):
 
     def addItem(self, item: Union[str, List[str], Tuple[str, ...]]) -> None:
         if isinstance(item, str):
-            self.addItem(item)
+            super(CustomComboBox, self).addItem(item)
         elif isinstance(item, list):
-            self.addItems(item)
+            super(CustomComboBox, self).addItems(item)
 
     def getItemsText(self) -> List[str]:
         ret = []
