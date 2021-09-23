@@ -20,8 +20,8 @@ class BaseLayout(QLayout):
             self.rows[index] = field
         elif field.objectName():
             self.rows[field.objectName()] = field
-        else:
-            logger.warning(f'object:\'{self.parent().objectName()}\' 未设置索引')
+        # else:
+        #     logger.warning(f'object:\'{self.parent().objectName()}\' 未设置索引')
 
 
 class CustomFormLayout(QFormLayout, BaseLayout):

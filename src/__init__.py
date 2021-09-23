@@ -10,14 +10,16 @@ from loguru import logger
 import src.layout.widget
 from src.layout.BaseLayout import CustomGridLayout, CustomFormLayout, CustomHBoxLayout, CustomVBoxLayout
 from src.layout.widget import GridLayoutWidget, FormLayoutWidget, HBoxLayoutWidget, VBoxLayoutWidget
-from typing import Union, Tuple, List, Type
+from typing import Union, Tuple, List, Type, Callable
 from functools import wraps
 
 
 class BaseControl(VBoxLayoutWidget):
-    def __init__(self, title: str, parent=None, objectName=None, widget_flag: int = None):
+    def __init__(self, title: str, parent=None, objectName=None,
+                 widget_flag: Union[int, Type[QWidget], Callable, None] = None):
         super(BaseControl, self).__init__(parent, objectName)
         self._title = CustomLabel(title=title, parent=self)
+
         if widget_flag == src.layout.widget.FormLayoutWidgetFlag:
             self._widget = FormLayoutWidget(parent=self)
         elif widget_flag == src.layout.widget.HBoxLayoutWidgetFlag:
@@ -28,6 +30,8 @@ class BaseControl(VBoxLayoutWidget):
             self._widget = GridLayoutWidget(parent=self)
         elif isinstance(widget_flag, type(QWidget)):
             self._widget = widget_flag(parent=self)
+        elif callable(widget_flag):
+            self._widget = widget_flag()
         else:
             self._widget = QWidget(self)
 
@@ -71,42 +75,26 @@ class CustomComboBox(QComboBox):
         return self._layout
 
 
-class ComboBoxWithButton(CustomComboBox):
-    """
-        Activated	当用户选中一个下拉选项时发射该信号
-        currentIndexChanged	当下拉选项的索引发生改变时发射该信号
-        highlighted	当选中一个已经选中的下拉选项时，发射该信号
-
-    """
+class ComboBoxWithButton(HBoxLayoutWidget):
     def __init__(self, item: Union[str, List[str], Tuple[str, ...]] = None, btn_text: str = None,
                  parent: QWidget = None):
-        super(ComboBoxWithButton, self).__init__(item=item, parent=parent)
-
+        super(ComboBoxWithButton, self).__init__(parent=parent)
         self._button = CustomButton(text=btn_text, parent=self)
-        self._layout = CustomHBoxLayout(parent)
+        self._comboBox = CustomComboBox(item=item, parent=self)
 
-        self.setProperty('name', 'ComboBoxWithButton_comboBox')
-        self._button.setProperty('name', 'ComboBoxWithButton_btn')
-
-        self.layout.addWidget(self)
-        self.layout.addWidget(self._button)
-
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setStretch(0, 6)
-        self.layout.setStretch(0, 1)
+        self.addWidget(self.comboBox, 6)
+        self.addWidget(self.button, 1)
 
     @property
     def comboBox(self):
-        return self
+        return self._comboBox
 
     @property
     def button(self):
         return self._button
 
-    def setEnabled(self, flag: bool):
-        """ 设置按钮和下拉框是否可以点击 """
-        self.button.setEnabled(flag)
-        super(ComboBoxWithButton, self).setEnabled(flag)
+    def addItem(self, item: Union[str, List[str], Tuple[str, ...]]) -> None:
+        self.comboBox.addItem(item)
 
 
 class CustomLabel(QLabel):

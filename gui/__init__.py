@@ -60,8 +60,12 @@ class MainUI(QtWidgets.QMainWindow):
         self.device_main.addWidget(self.device_tool_widget, 8)
 
         # 设备选择控件 布局: 垂直布局----------------------------------------------------------------------------------------
-        self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control')
-        self.device_chose_widget = self._create_device_chose_widget(parent=self.device_chose_control.widget)
+        self.device_chose_control = BaseControl(title='设备选择', objectName='device_chose_control',
+                                                widget_flag=lambda: ComboBoxWithButton(btn_text='刷新设备'))
+        self.device_chose_control.widget.comboBox.setMinimumHeight(30)
+        self.device_chose_control.widget.button.setMinimumHeight(30)
+        self.device_chose_control.widget.button.setToolTip('点击后刷新设备列表')
+        self.device_chose_widget = self.device_chose_control.widget
         self.enabledManager.addWidget(self.device_chose_widget, index='device_chose')
         self._set_device_chose_callback()
 
@@ -92,14 +96,6 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.device_tool_widget.addWidget(self.device_app_control)
         self.device_tool_widget.layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
-
-    @staticmethod
-    def _create_device_chose_widget(parent: QWidget):
-        widget = ComboBoxWithButton(parent=parent, btn_text='刷新设备')
-        widget.comboBox.setMinimumHeight(30)
-        widget.button.setMinimumHeight(30)
-        widget.button.setToolTip('点击后刷新设备列表')
-        return widget
 
     @staticmethod
     def _create_device_info_widget(parent: FormLayoutWidget):
@@ -234,20 +230,20 @@ class MainUI(QtWidgets.QMainWindow):
     # --------------callback
     def _set_device_chose_callback(self):
         """ 使用device_chose控件进行回调 """
-        # 使用控件self.device_chose_widget,绑定btn回调,向comboBox中刷新组件
+        # 使用控件self.device_chose_control,绑定btn回调,向comboBox中刷新组件
         client = ADBClient()
 
         def callback(adb: ADBClient, cls):
             def fun():
                 logger.debug('刷新设备')
                 cls.enabledManager.all_unavailable()
-                current_device = cls.device_chose_widget.currentText()
+                current_device = cls.device_chose_control.widget.comboBox.currentText()
                 # step1: 清除所有item
-                cls.device_chose_widget.clear()
+                cls.device_chose_control.widget.comboBox.clear()
 
                 # step2: 讲选中设备,重新添加进item
                 if current_device:
-                    cls.device_chose_widget.addItem(current_device)
+                    cls.device_chose_control.widget.comboBox.addItem(current_device)
 
                 # 从adb devices中,获取最新的设备信息
                 devices = adb.devices
@@ -255,7 +251,7 @@ class MainUI(QtWidgets.QMainWindow):
                 for device_id, state in devices.items():
                     if state != 'device' or device_id == current_device:
                         continue
-                    cls.device_chose_widget.addItem(device_id)
+                    cls.device_chose_control.widget.comboBox.addItem(device_id)
 
                 cls.enabledManager.all_available()
 
@@ -264,8 +260,7 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread = Thread(exceptions=(AdbBaseError,))
         update_thread.add_hook(callback(adb=client, cls=self))
         update_thread.add_exception_hook(AdbBaseError, self.raise_dialog)
-        print(self.device_chose_widget)
-        self.device_chose_widget.button.set_click_hook(update_thread.start)
+        self.device_chose_control.widget.button.set_click_hook(update_thread.start)
 
     def _set_foreground_app_callback(self):
         btn: CustomButton = self.device_app_manage_widget.tools.getField('foreground_app')
@@ -397,7 +392,7 @@ class MainUI(QtWidgets.QMainWindow):
 
     # --------------
     def get_current_device(self) -> ADBDevice:
-        current_device_id = self.device_chose_widget.currentText()
+        current_device_id = self.device_chose_widget.comboBox.currentText()
         return ADBDevice(current_device_id)
 
     def get_current_app_manage_packageName(self) -> str:
