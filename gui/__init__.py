@@ -96,9 +96,9 @@ class MainUI(QtWidgets.QMainWindow):
     @staticmethod
     def _create_device_chose_widget(parent: QWidget):
         widget = ComboBoxWithButton(parent=parent, btn_text='刷新设备')
-        widget.setMinimumHeight(30)
-        widget.btn.setMinimumHeight(30)
-        widget.btn.setToolTip('点击后刷新设备列表')
+        widget.comboBox.setMinimumHeight(30)
+        widget.button.setMinimumHeight(30)
+        widget.button.setToolTip('点击后刷新设备列表')
         return widget
 
     @staticmethod
@@ -264,8 +264,8 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread = Thread(exceptions=(AdbBaseError,))
         update_thread.add_hook(callback(adb=client, cls=self))
         update_thread.add_exception_hook(AdbBaseError, self.raise_dialog)
-
-        self.device_chose_widget.btn.set_click_hook(update_thread.start)
+        print(self.device_chose_widget)
+        self.device_chose_widget.button.set_click_hook(update_thread.start)
 
     def _set_foreground_app_callback(self):
         btn: CustomButton = self.device_app_manage_widget.tools.getField('foreground_app')
@@ -392,8 +392,8 @@ class MainUI(QtWidgets.QMainWindow):
         update_thread.add_hook(callback(cls=self))
         update_thread.add_exception_hook(AdbBaseError, self.raise_dialog)
 
-        self.device_chose_widget.activated.connect(lambda: update_thread.start())
-        self.device_chose_widget.currentIndexChanged.connect(lambda: update_thread.start())
+        self.device_chose_widget.comboBox.activated.connect(lambda: update_thread.start())
+        self.device_chose_widget.comboBox.currentIndexChanged.connect(lambda: update_thread.start())
 
     # --------------
     def get_current_device(self) -> ADBDevice:

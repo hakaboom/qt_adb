@@ -26,6 +26,8 @@ class BaseControl(VBoxLayoutWidget):
             self._widget = VBoxLayoutWidget(parent=self)
         elif widget_flag == src.layout.widget.GridLayoutWidgetFlag:
             self._widget = GridLayoutWidget(parent=self)
+        elif isinstance(widget_flag, type(QWidget)):
+            self._widget = widget_flag(parent=self)
         else:
             self._widget = QWidget(self)
 
@@ -80,25 +82,30 @@ class ComboBoxWithButton(CustomComboBox):
                  parent: QWidget = None):
         super(ComboBoxWithButton, self).__init__(item=item, parent=parent)
 
-        self.btn = CustomButton(text=btn_text, parent=self)
-        self._layout = QHBoxLayout(parent)
+        self._button = CustomButton(text=btn_text, parent=self)
+        self._layout = CustomHBoxLayout(parent)
 
         self.setProperty('name', 'ComboBoxWithButton_comboBox')
-        self.btn.setProperty('name', 'ComboBoxWithButton_btn')
+        self._button.setProperty('name', 'ComboBoxWithButton_btn')
 
         self.layout.addWidget(self)
-        self.layout.addWidget(self.btn)
+        self.layout.addWidget(self._button)
 
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.setStretch(0, 6)
-        self.setStretch(0, 1)
+        self.layout.setStretch(0, 6)
+        self.layout.setStretch(0, 1)
 
-    def setStretch(self, index: int, stretch: int):
-        self.layout.setStretch(index, stretch)
+    @property
+    def comboBox(self):
+        return self
+
+    @property
+    def button(self):
+        return self._button
 
     def setEnabled(self, flag: bool):
         """ 设置按钮和下拉框是否可以点击 """
-        self.btn.setEnabled(flag)
+        self.button.setEnabled(flag)
         super(ComboBoxWithButton, self).setEnabled(flag)
 
 
